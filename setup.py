@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="avro_validator",
-    version="1.0.1",
+    version="1.0.2",
     author="Leonardo de Campos Almeida",
     author_email="leocalm@gmail.com",
     description="Pure python avro schema validator",
@@ -18,7 +18,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=[],
     extras_require={
         "dev": [
