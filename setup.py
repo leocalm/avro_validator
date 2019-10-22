@@ -41,7 +41,7 @@ setuptools.setup(
     project_urls={
         "Repository": "https://github.com/leocalm/avro_validator",
         "Bug Reports": "https://github.com/leocalm/avro_validator/issues",
-        # "Documentation": "https://arrow.readthedocs.io",
+        "Documentation": "https://avro-validator.readthedocs.io/",
     },
     entry_points={
         "console_scripts": ["avro_validator=avro_validator.cli:main"]
