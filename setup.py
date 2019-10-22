@@ -18,11 +18,31 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.5',
+    install_requires=[],
+    extras_require={
+        "dev": [
+            "pytest",
+            "coverage",
+            "tox",
+            "flake8",
+            "hypothesis",
+            "pytest-cov",
+        ],
+        "docs": [
+            "sphinx",
+            "pallets-sphinx-themes",
+            "sphinxcontrib-log-cabinet",
+            "sphinx-issues",
+        ],
+    },
     keywords="avro schema",
     project_urls={
         "Repository": "https://github.com/leocalm/avro_validator",
         "Bug Reports": "https://github.com/leocalm/avro_validator/issues",
         # "Documentation": "https://arrow.readthedocs.io",
-    }
+    },
+    entry_points={
+        "console_scripts": ["avro_validator=avro_validator.cli:main"]
+    },
 )
