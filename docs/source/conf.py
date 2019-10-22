@@ -49,11 +49,11 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-pygments_style = 'sphinx'
-
-html_theme = 'neo_rtd_theme'
-import sphinx_theme
-html_theme_path = [sphinx_theme.get_html_theme_path()]
+# pygments_style = 'sphinx'
+#
+# html_theme = 'neo_rtd_theme'
+# import sphinx_theme
+# html_theme_path = [sphinx_theme.get_html_theme_path()]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
