@@ -28,6 +28,7 @@ setuptools.setup(
             "flake8",
             "hypothesis",
             "pytest-cov",
+            "python-coveralls",
         ],
         "docs": [
             "sphinx",

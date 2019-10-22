@@ -5,3 +5,4 @@ flake8==3.7.8
 tox==3.14.0
 Sphinx==2.2.0
 python-coveralls==2.9.3
+sphinx-theme==1.0
