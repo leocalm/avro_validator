@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/leocalm/avro_validator.svg?branch=master)](https://travis-ci.org/leocalm/avro_validator)
+[![Coverage Status](https://coveralls.io/repos/github/leocalm/avro_validator/badge.svg?branch=master)](https://coveralls.io/github/leocalm/avro_validator?branch=master)
+
 # Avro Validator
 A pure python avro schema validator.
 
