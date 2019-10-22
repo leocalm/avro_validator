@@ -105,3 +105,8 @@ venv.bak/
 
 # pycharm
 .idea
+/docs/source/avro_validator.avro_types.rst
+/docs/source/avro_validator.cli.rst
+/docs/source/avro_validator.rst
+/docs/source/avro_validator.schema.rst
+/docs/source/modules.rst

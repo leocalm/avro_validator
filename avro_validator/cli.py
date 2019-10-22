@@ -6,7 +6,9 @@ import json
 from avro_validator.schema import Schema
 
 
-def main():
+def main() -> None:
+    """Main entrypoint for the command line"""
+
     parser = argparse.ArgumentParser(description='Validate json against avro schema.')
     parser.add_argument('schema_file', help='The path to the file containing the avro schema.')
     parser.add_argument('data_file', help='The path to a file containing the data to validate.')

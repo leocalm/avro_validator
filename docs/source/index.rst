@@ -7,10 +7,10 @@ Welcome to avro_validator's documentation!
 ==========================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
-
+   avro_validator
 
 Indices and tables
 ==================
