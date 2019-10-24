@@ -559,9 +559,14 @@ class RecordType(ComplexType):
         if not self.check_type(value):
             raise ValueError(f'The value [{value}] should have type dict but it has [{type(value)}].')
 
-        if set(value.keys()) != self.__fields.keys():
-            raise ValueError(f'The fields from value [{value}] differs from the fields '
-                             f'of the record type [{self.__fields}]')
+        valueks = set(value.keys())
+        reqdflds = set([x for x in self.__fields.keys() if not (NullType == type(self.__fields[x].type) or (UnionType == type(self.__fields[x].type) and NullType in [type(y) for y in self.__fields[x].type.types]))])
+        
+        if not reqdflds.issubset(valueks):
+            missingfields = reqdflds - valueks
+            raise ValueError(f'The fields from value [{valueks}] differs from the fields '
+                             f'of the record type [{reqdflds}].  The following fields are '
+                             f'required, but not present: [{missingfields}].')
 
         for key, field_value in value.items():
             self._validate_field(key, field_value)
