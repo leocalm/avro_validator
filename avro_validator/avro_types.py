@@ -568,6 +568,12 @@ class RecordType(ComplexType):
                              f'of the record type [{reqdflds}].  The following fields are '
                              f'required, but not present: [{missingfields}].')
 
+        if not valueks.issubset(set(self.__fields.keys())):
+            extrafields = set(self.__fields.keys()) - valueks
+            raise ValueError(f'The fields from value [{valueks}] differs from the fields '
+                             f'of the record type [{reqdflds}].  The following fields are '
+                             f'not in the schema, but are present: [{extrafields}].')
+
         for key, field_value in value.items():
             self._validate_field(key, field_value)
 
