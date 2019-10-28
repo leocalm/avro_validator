@@ -561,8 +561,8 @@ class RecordType(ComplexType):
 
         valueks = set(value.keys())
         reqdflds = set([x for x in self.__fields.keys() 
-                        if not (self.__fields[x].isInstance(NullType) 
-                            or (self.__fields[x].isInstance(UnionType) and NullType in [type(y) for y in self.__fields[x].type.types]))])
+                        if not (self.__fields[x].isinstance(NullType) 
+                            or (self.__fields[x].isinstance(UnionType) and NullType in [type(y) for y in self.__fields[x].type.types]))])
 
         if not reqdflds.issubset(valueks):
             missingfields = reqdflds - valueks
