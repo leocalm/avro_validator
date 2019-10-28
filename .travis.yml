@@ -11,6 +11,6 @@ env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR/avro_validator
 install:
   "pip install -r requirements.txt"
 script:
-  pytest avro_validator/tests --cov=avro_validator
+  pytest avro_validator/tests --cov=avro_validator && flake8 avro_validator
 after_success:
   coveralls
