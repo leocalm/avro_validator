@@ -560,9 +560,12 @@ class RecordType(ComplexType):
             raise ValueError(f'The value [{value}] should have type dict but it has [{type(value)}].')
 
         valueks = set(value.keys())
-        reqdflds = set([x for x in self.__fields.keys() 
-                        if not (self.__fields[x].isinstance(NullType) 
-                            or (self.__fields[x].isinstance(UnionType) and NullType in [type(y) for y in self.__fields[x].type.types]))])
+        reqdflds = set([x for x in self.__fields.keys()
+                        if not (isinstance(self.__fields[x].type, NullType)
+                                or (isinstance(self.__fields[x].type, UnionType)
+                                    and NullType in [type(y) for y in self.__fields[x].type.types])
+                                )
+                        ])
 
         if not reqdflds.issubset(valueks):
             missingfields = reqdflds - valueks
