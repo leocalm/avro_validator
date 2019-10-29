@@ -285,6 +285,13 @@ def test_record_type(value):
     assert RecordType({'name': RecordTypeField('name', StringType())}).validate(value) is True
 
 
+@given(value=fixed_dictionaries({'name': text()}))
+def test_record_type_repr(value):
+    msg = "RecordType <{'name': RecordTypeField <name: name, type: StringType, " \
+          "doc: None, default: None, order: None, aliases: None>}>"
+    assert str(RecordType({'name': RecordTypeField('name', StringType())})) == msg
+
+
 @given(value=one_of(integers(),
                     none(),
                     lists(elements=integers()),
@@ -311,9 +318,28 @@ def test_record_type_invalid_value_type(value):
 
 @given(value=fixed_dictionaries({'name': text(), 'age': integers()}))
 def test_record_type_additional_key_in_value(value):
-    regex = r'The fields from value \[.*\] differs from the fields of the record type \[.*\]'
+    regex = r"The fields from value \[.*\] differs from the fields of the record type \[.*\].  " \
+            r"The following fields are not in the schema, but are present: \[.*\]."
     with pytest.raises(ValueError, match=regex):
         RecordType({'name': RecordTypeField('name', StringType())}).validate(value)
+
+
+@given(value=fixed_dictionaries({'name': text(), 'age': integers(max_value=200)}))
+def test_record_type_optional_key_in_value(value):
+    assert RecordType(
+            {'name': RecordTypeField('name', StringType()),
+             'age': RecordTypeField('age', UnionType([NullType(), IntType()]))
+             }
+          ).validate(value) is True
+
+
+@given(value=fixed_dictionaries({'name': text()}))
+def test_record_type_optional_key_not_in_value(value):
+    assert RecordType(
+            {'name': RecordTypeField('name', StringType()),
+             'age': RecordTypeField('age', UnionType([NullType(), IntType()]))
+             }
+          ).validate(value) is True
 
 
 @given(value=fixed_dictionaries({'name': text()}))
