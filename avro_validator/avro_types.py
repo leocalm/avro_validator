@@ -559,25 +559,24 @@ class RecordType(ComplexType):
         if not self.check_type(value):
             raise ValueError(f'The value [{value}] should have type dict but it has [{type(value)}].')
 
-        valueks = set(value.keys())
-        reqdflds = set([x for x in self.__fields.keys()
-                        if not (isinstance(self.__fields[x].type, NullType)
-                                or (isinstance(self.__fields[x].type, UnionType)
-                                    and NullType in [type(y) for y in self.__fields[x].type.types])
-                                )
-                        ])
+        value_keys = set(value.keys())
+        required_fields = set(
+            [field for (field, field_record) in self.__fields.items()
+             if not (isinstance(field_record.type, NullType)
+                     or (isinstance(field_record.type, UnionType)
+                         and NullType in [type(t) for t in field_record.type.types]))])
 
-        if not reqdflds.issubset(valueks):
-            missingfields = reqdflds - valueks
-            raise ValueError(f'The fields from value [{valueks}] differs from the fields '
-                             f'of the record type [{reqdflds}].  The following fields are '
-                             f'required, but not present: [{missingfields}].')
+        if not required_fields.issubset(value_keys):
+            missing_fields = required_fields - value_keys
+            raise ValueError(f'The fields from value [{value_keys}] differs from the fields '
+                             f'of the record type [{required_fields}]. The following fields are '
+                             f'required, but not present: [{missing_fields}].')
 
-        if not valueks.issubset(set(self.__fields.keys())):
-            extrafields = set(self.__fields.keys()) - valueks
-            raise ValueError(f'The fields from value [{valueks}] differs from the fields '
-                             f'of the record type [{reqdflds}].  The following fields are '
-                             f'not in the schema, but are present: [{extrafields}].')
+        if not value_keys.issubset(set(self.__fields.keys())):
+            extra_fields = set(self.__fields.keys()) - value_keys
+            raise ValueError(f'The fields from value [{value_keys}] differs from the fields '
+                             f'of the record type [{required_fields}]. The following fields are '
+                             f'not in the schema, but are present: [{extra_fields}].')
 
         for key, field_value in value.items():
             self._validate_field(key, field_value)

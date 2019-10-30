@@ -287,8 +287,8 @@ def test_record_type(value):
 
 @given(value=fixed_dictionaries({'name': text()}))
 def test_record_type_repr(value):
-    msg = "RecordType <{'name': RecordTypeField <name: name, type: StringType, " \
-          "doc: None, default: None, order: None, aliases: None>}>"
+    msg = ('RecordType <{\'name\': RecordTypeField <name: name, type: StringType, '
+           'doc: None, default: None, order: None, aliases: None>}>')
     assert str(RecordType({'name': RecordTypeField('name', StringType())})) == msg
 
 
@@ -318,8 +318,8 @@ def test_record_type_invalid_value_type(value):
 
 @given(value=fixed_dictionaries({'name': text(), 'age': integers()}))
 def test_record_type_additional_key_in_value(value):
-    regex = r"The fields from value \[.*\] differs from the fields of the record type \[.*\].  " \
-            r"The following fields are not in the schema, but are present: \[.*\]."
+    regex = (r'The fields from value \[.*\] differs from the fields of the record type \[.*\]. '
+             r'The following fields are not in the schema, but are present: \[.*\].')
     with pytest.raises(ValueError, match=regex):
         RecordType({'name': RecordTypeField('name', StringType())}).validate(value)
 
