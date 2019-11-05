@@ -6,13 +6,13 @@
 # Avro Validator
 A pure python avro schema validator.
 
-The default avro library for Python provide validation of data against the schema, the problem is that the output of 
+The default avro library for Python provides validation of data against the schema, the problem is that the output of 
 this validation doesn't provide information about the error. 
 All you get is the `the datum is not an example of the schema` error message.
 
-When working with bigger avro schemas, sometimes is not easy to visually find the field that has an issue.
+When working with bigger avro schemas, sometimes it's not easy to visually find the field that has an issue.
 
-This library provide clearer exceptions when validating data against the avro schema, in order to be easier to 
+This library provides clearer exceptions when validating data against the avro schema, in order to make it easier to 
 identify the field that is not compliant with the schema and the problem with that field.
 
 ## Installing
