@@ -1,5 +1,5 @@
-import os
 import json
+from pathlib import Path
 
 from avro_validator.avro_types import RecordType
 
@@ -13,8 +13,10 @@ class Schema:
         Args:
             schema: the json string containing the schema, or the path to a json file containing the schema
         """
-        if os.path.isfile(schema):
-            self._schema = open(schema, 'r').read()
+        file_path = Path(schema)
+        if file_path.exists():
+            with open(schema, 'r') as schema_file:
+                self._schema = schema_file.read()
         else:
             self._schema = schema
 
