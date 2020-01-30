@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="avro_validator",
-    version="1.0.5",
+    version="1.0.6",
     author="Leonardo de Campos Almeida",
     author_email="leocalm@gmail.com",
     description="Pure python avro schema validator",
