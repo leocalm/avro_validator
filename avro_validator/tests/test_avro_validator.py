@@ -327,19 +327,19 @@ def test_record_type_additional_key_in_value(value):
 @given(value=fixed_dictionaries({'name': text(), 'age': integers(max_value=200)}))
 def test_record_type_optional_key_in_value(value):
     assert RecordType(
-            {'name': RecordTypeField('name', StringType()),
-             'age': RecordTypeField('age', UnionType([NullType(), IntType()]))
-             }
-          ).validate(value) is True
+        {'name': RecordTypeField('name', StringType()),
+         'age': RecordTypeField('age', UnionType([NullType(), IntType()]))
+         }
+    ).validate(value) is True
 
 
 @given(value=fixed_dictionaries({'name': text()}))
 def test_record_type_optional_key_not_in_value(value):
     assert RecordType(
-            {'name': RecordTypeField('name', StringType()),
-             'age': RecordTypeField('age', UnionType([NullType(), IntType()]))
-             }
-          ).validate(value) is True
+        {'name': RecordTypeField('name', StringType()),
+         'age': RecordTypeField('age', UnionType([NullType(), IntType()]))
+         }
+    ).validate(value) is True
 
 
 @given(value=fixed_dictionaries({'name': text()}))
@@ -560,27 +560,27 @@ def test_beautiful_schema_exception():
 
 def test_beautiful_data_exception():
     record_type = RecordType.build({
-            'name': 'root',
-            'type': 'record',
-            'fields': [
-                {'name': 'data', 'type': {
-                    'type': 'record',
-                    'name': 'data',
-                    'fields': [
-                        {
+        'name': 'root',
+        'type': 'record',
+        'fields': [
+            {'name': 'data', 'type': {
+                'type': 'record',
+                'name': 'data',
+                'fields': [
+                    {
+                        'name': 'inner',
+                        'type': {
                             'name': 'inner',
-                            'type': {
-                                'name': 'inner',
-                                'type': 'record',
-                                'fields': [
-                                    {'name': 'count', 'type': 'int'}
-                                ]
-                            }
+                            'type': 'record',
+                            'fields': [
+                                {'name': 'count', 'type': 'int'}
+                            ]
                         }
-                    ]
-                }}
-            ],
-        })
+                    }
+                ]
+            }}
+        ],
+    })
 
     msg = r'Error validating value for field \[data,inner\]\: ' \
           r'The value \[a\] for field \[count\] should be \[IntType\].'
@@ -773,3 +773,74 @@ def test_recursive_record_field():
     }
 
     assert record_type.validate(data) is True
+
+
+def test_validate_against_extra_values():
+    record_type = RecordType.build({
+        'name': 'root',
+        'type': 'record',
+        'fields': [
+            {'name': 'data', 'type': {
+                'type': 'record',
+                'name': 'data',
+                'fields': [
+                    {
+                        'name': 'inner',
+                        'type': {
+                            'name': 'inner',
+                            'type': 'record',
+                            'fields': [
+                                {'name': 'count', 'type': 'int'}
+                            ]
+                        }
+                    }
+                ]
+            }}
+        ],
+    })
+
+    assert record_type.validate({
+        'data': {
+            'inner': {
+                'count': 1
+            }
+        },
+        'boulou': 'Billy'
+    }, skip_extra_keys=True) is True
+
+
+def test_validate_failed_against_extra_values():
+    record_type = RecordType.build({
+        'name': 'root',
+        'type': 'record',
+        'fields': [
+            {'name': 'data', 'type': {
+                'type': 'record',
+                'name': 'data',
+                'fields': [
+                    {
+                        'name': 'inner',
+                        'type': {
+                            'name': 'inner',
+                            'type': 'record',
+                            'fields': [
+                                {'name': 'count', 'type': 'int'}
+                            ]
+                        }
+                    }
+                ]
+            }}
+        ],
+    })
+
+    msg = (r'The fields from value \[.*\] differs from the fields of the record type \[.*\]. '
+           r'The following fields are not in the schema, but are present: \[.*\].')
+    with pytest.raises(ValueError, match=msg):
+        record_type.validate({
+            'data': {
+                'inner': {
+                    'count': 1
+                }
+            },
+            'boulou': 'Billy'
+        })
