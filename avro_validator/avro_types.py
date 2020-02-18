@@ -564,7 +564,7 @@ class RecordType(ComplexType):
 
             raise ValueError(f'Error validating value for field [{fields}]: {actual_error}')
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys=False) -> bool:
         """Validates the value against the record type.
 
         First, the type of the value is checked, and if it is not a dict, an exception is raised.
@@ -573,6 +573,7 @@ class RecordType(ComplexType):
 
         Args:
           value: the value to be validated
+          skip_extra_keys: Skip the avro validation for all unknown fields. Default to False
 
         Returns:
           True if the value is valid.
@@ -596,14 +597,17 @@ class RecordType(ComplexType):
                              f'of the record type [{required_fields}]. The following fields are '
                              f'required, but not present: [{missing_fields}].')
 
-        if not value_keys.issubset(set(self.__fields.keys())):
-            extra_fields = set(self.__fields.keys()) - value_keys
+        if not skip_extra_keys and not value_keys.issubset(set(self.__fields.keys())):
+            extra_fields = value_keys - set(self.__fields.keys())
             raise ValueError(f'The fields from value [{value_keys}] differs from the fields '
                              f'of the record type [{required_fields}]. The following fields are '
                              f'not in the schema, but are present: [{extra_fields}].')
 
+        extra_fields = value_keys - set(self.__fields.keys())
+
         for key, field_value in value.items():
-            self._validate_field(key, field_value)
+            if key not in extra_fields:
+                self._validate_field(key, field_value)
 
         return True
 
