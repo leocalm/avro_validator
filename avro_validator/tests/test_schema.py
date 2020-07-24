@@ -35,3 +35,10 @@ def test_create_schema_from_json_file(tmpdir):
     schema = Schema(json_file.realpath())
     parsed = schema.parse()
     assert isinstance(parsed, RecordType)
+
+
+def test_schema_validate():
+    schema_json = json.dumps(TEST_SCHEMA)
+
+    schema = Schema(schema_json)
+    assert schema.validate() is True
