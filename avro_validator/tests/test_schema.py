@@ -19,6 +19,22 @@ TEST_SCHEMA = {
     ],
 }
 
+WRONG_TEST_SCHEMA = {
+    'name': 'my_schema',
+    'type': 'record',
+    'fields': [
+        {'name': 'name'},
+        {'name': 'age', 'type': 'int'},
+        {'name': 'data', 'type': {
+            'type': 'record',
+            'name': 'data',
+            'fields': [
+                {'name': 'count', 'type': 'int'}
+            ]
+        }}
+    ],
+}
+
 
 def test_create_schema_from_string():
     schema_json = json.dumps(TEST_SCHEMA)
@@ -35,3 +51,17 @@ def test_create_schema_from_json_file(tmpdir):
     schema = Schema(json_file.realpath())
     parsed = schema.parse()
     assert isinstance(parsed, RecordType)
+
+
+def test_schema_validate():
+    schema_json = json.dumps(TEST_SCHEMA)
+
+    schema = Schema(schema_json)
+    assert schema.validate() is True
+
+
+def test_schema_validate_false():
+    schema_json = json.dumps(WRONG_TEST_SCHEMA)
+
+    schema = Schema(schema_json)
+    assert schema.validate() is False
