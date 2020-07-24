@@ -618,7 +618,6 @@ def test_validate_without_raising():
             ],
         })
 
-
     result = record_type.validate_without_raising({
         'data': {
             'inner': {
