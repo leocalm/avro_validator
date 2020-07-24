@@ -592,3 +592,39 @@ def test_beautiful_data_exception():
                 }
             }
         })
+
+
+def test_validate_without_raising():
+    record_type = RecordType.build({
+            'name': 'root',
+            'type': 'record',
+            'fields': [
+                {'name': 'data', 'type': {
+                    'type': 'record',
+                    'name': 'data',
+                    'fields': [
+                        {
+                            'name': 'inner',
+                            'type': {
+                                'name': 'inner',
+                                'type': 'record',
+                                'fields': [
+                                    {'name': 'count', 'type': 'int'}
+                                ]
+                            }
+                        }
+                    ]
+                }}
+            ],
+        })
+
+
+    result = record_type.validate_without_raising({
+        'data': {
+            'inner': {
+                'count': 'a'
+            }
+        }
+    })
+
+    assert result is False

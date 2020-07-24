@@ -583,6 +583,25 @@ class RecordType(ComplexType):
 
         return True
 
+    def validate_without_raising(self, value: Any) -> bool:
+        """Validates the value against the record type.
+
+        First, the type of the value is checked, and if it is not a dict, an exception is raised.
+        Then, all the keys in the value are checked to make sure that they are present in the record fields.
+        Finally, all fields are validated against their definitions.
+
+        Args:
+          value: the value to be validated
+
+        Returns:
+          True if the value is valid, False otherwise.
+
+        """
+        try:
+            return self.validate(value)
+        except (ValueError, KeyError):
+            return False
+
     @classmethod
     def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'RecordType':
         """Build an instance of the RecordType, based on a json representation of it.
