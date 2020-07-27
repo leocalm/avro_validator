@@ -21,6 +21,7 @@ FIELD_MAPPING = {
     'record': 'RecordType'
 }
 
+
 class Type:
     """Base abstract class to represent avro types"""
 
@@ -414,10 +415,11 @@ class RecordTypeField(ComplexType):
             raise ValueError(f'Error parsing the field [{fields}]: {actual_error}')
 
     @classmethod
-    def build(cls,
-              json_repr: Union[Mapping[str, Any], Sequence[Any]],
-              custom_fields: Optional[Mapping[str, Type]] = None
-        ) -> 'RecordTypeField':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'RecordTypeField':
         """Build an instance of the RecordTypeField, based on a json representation of it.
 
         Args:
