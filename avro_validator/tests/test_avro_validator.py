@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from hypothesis import given
 from hypothesis.strategies import (integers,
@@ -627,3 +629,63 @@ def test_validate_without_raising():
     })
 
     assert result is False
+
+
+def test_custom_record_field():
+    record_type = RecordType.build({
+        "name": "Bla",
+        "type": "record",
+        "fields": [
+            {
+                "name": "actor",
+                "type": {
+                    "name": "Actor",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "actedBy",
+                "type": "Actor"
+            }
+        ]
+    })
+
+    data = {
+        "actor": {
+            "name": "a"
+        },
+        "actedBy": {
+            "name": "a"
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_recursive_record_field():
+    record_type = RecordType.build({
+        "name": "Actor",
+        "type": "record",
+        "fields": [
+            {
+                "name": "actedBy",
+                "type": ["null", "Actor"],
+            }
+        ]
+    })
+
+    data = {
+        "actedBy": {
+            "actedBy": {
+                "actedBy": None
+            }
+        }
+    }
+
+    assert record_type.validate(data) is True

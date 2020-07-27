@@ -26,15 +26,3 @@ class Schema:
         """
         schema = json.loads(self._schema)
         return RecordType.build(schema)
-
-    def validate(self) -> bool:
-        """Parses the schema returns a boolean indicating if the schema is valid.
-
-        Returns:
-            A boolean indicating if the schema is valid.
-        """
-        try:
-            self.parse()
-            return True
-        except ValueError:
-            return False

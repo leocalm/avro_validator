@@ -2,7 +2,7 @@ import abc
 import re
 import struct
 import sys
-from typing import Any, Sequence, Mapping, Optional, Set, Union
+from typing import Any, Sequence, Mapping, Optional, Set, Union, Dict
 
 FIELD_MAPPING = {
     'string': 'StringType',
@@ -20,7 +20,6 @@ FIELD_MAPPING = {
     'enum': 'EnumType',
     'record': 'RecordType'
 }
-
 
 class Type:
     """Base abstract class to represent avro types"""
@@ -46,7 +45,11 @@ class Type:
         return isinstance(value, self.python_type)
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'Type':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, 'Type']]
+    ) -> 'Type':
         return cls()
 
 
@@ -66,18 +69,21 @@ class ComplexType(Type):
         return True
 
     @staticmethod
-    def _get_field_from_json(field_type: Any) -> Type:
+    def _get_field_from_json(field_type: Any, custom_fields: Mapping[str, Type]) -> Type:
         if isinstance(field_type, dict):
-            return getattr(sys.modules[__name__], FIELD_MAPPING[field_type['type']]).build(field_type)
+            return getattr(sys.modules[__name__], FIELD_MAPPING[field_type['type']]).build(field_type, custom_fields)
 
         if isinstance(field_type, list):
-            return UnionType.build(field_type)
+            return UnionType.build(field_type, custom_fields)
+
+        if custom_fields.get(field_type, None) is not None:
+            return field_type
 
         if not FIELD_MAPPING.get(field_type):
             raise ValueError(
                 f'The type [{field_type}] is not recognized by Avro')
 
-        return getattr(sys.modules[__name__], FIELD_MAPPING[field_type]).build(None)
+        return getattr(sys.modules[__name__], FIELD_MAPPING[field_type]).build(None, custom_fields)
 
 
 class IntType(Type):
@@ -384,9 +390,16 @@ class RecordTypeField(ComplexType):
         return self.__type
 
     @classmethod
-    def __build_field_type(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> Type:
+    def __build_field_type(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> Type:
+        if custom_fields is None:
+            custom_fields = {}
+
         try:
-            return cls._get_field_from_json(json_repr['type'])
+            return cls._get_field_from_json(json_repr['type'], custom_fields)
         except ValueError as error:
             error_msg = error.args[0]
             match = re.match(r'^Error parsing the field \[(.*)\]: (.*)$', error_msg)
@@ -401,22 +414,29 @@ class RecordTypeField(ComplexType):
             raise ValueError(f'Error parsing the field [{fields}]: {actual_error}')
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'RecordTypeField':
+    def build(cls,
+              json_repr: Union[Mapping[str, Any], Sequence[Any]],
+              custom_fields: Optional[Mapping[str, Type]] = None
+        ) -> 'RecordTypeField':
         """Build an instance of the RecordTypeField, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a RecordTypeField, according to avro specification
+            custom_fields: Map of custom_fields used to build the records
 
         Returns:
             An newly created instance of RecordTypeField, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields = {}
+
         cls._validate_json_repr(json_repr)
 
         field = cls()
 
         field.__name = json_repr['name']
 
-        field.__type = cls.__build_field_type(json_repr)
+        field.__type = cls.__build_field_type(json_repr, custom_fields)
 
         field.__doc = json_repr.get('doc')
         field.__default = json_repr.get('default')
@@ -467,6 +487,7 @@ class RecordType(ComplexType):
         self.__namespace: Optional[str] = None
         self.__aliases: Optional[str] = None
         self.__doc: Optional[str] = None
+        self.__custom_fields = {}
 
     @property
     def fields(self) -> Mapping[str, RecordTypeField]:
@@ -476,6 +497,15 @@ class RecordType(ComplexType):
             The list of fields for the RecordType.
         """
         return self.__fields
+
+    @property
+    def name(self) -> str:
+        """Getter for the name of the RecordType.
+
+        Returns:
+            The name of the RecordType.
+        """
+        return self.__name
 
     def _validate_field(self, field_key: str, field_value: Any) -> bool:
         """Validates a field from the list of fields.
@@ -520,12 +550,16 @@ class RecordType(ComplexType):
         Raises:
           ValueError if the field is not valid, according to the definition above.
         """
-        if not self.__fields[field_key].type.check_type(field_value):
+        field_type = self.__fields[field_key].type
+        if isinstance(field_type, str):
+            field_type = self.__custom_fields[field_type]
+
+        if not field_type.check_type(field_value):
             msg = f'The value [{field_value}] for field [{field_key}] should be [{self.__fields[field_key].type}].'
             raise ValueError(msg)
 
         try:
-            return self.__fields[field_key].type.validate(field_value)
+            return field_type.validate(field_value)
         except ValueError as error:
             error_msg = error.args[0]
             match = re.match(r'^Error validating value for field \[(.*)\]: (.*)$', error_msg)
@@ -603,23 +637,44 @@ class RecordType(ComplexType):
             return False
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'RecordType':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'RecordType':
         """Build an instance of the RecordType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a RecordType, according to avro specification
+            custom_fields: Map of custom_fields used to build the records
 
         Returns:
             An newly created instance of RecordType, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields: Dict[str, RecordType] = {}
+
         cls._validate_json_repr(json_repr)
 
+        name = json_repr['name']
+
+        if custom_fields.get(name):
+            return custom_fields[name]
+
+        custom_fields[name] = {}
+
         record_type = cls()
-        record_type.__name = json_repr['name']
+        record_type.__custom_fields = custom_fields
+        record_type.__name = name
         record_type.__namespace = json_repr.get('namespace')
         record_type.__aliases = json_repr.get('aliases')
         record_type.__doc = json_repr.get('doc')
-        record_type.__fields = {field['name']: RecordTypeField.build(field) for field in json_repr['fields']}
+        record_type.__fields = {
+            field['name']: RecordTypeField.build(field,
+                                                 record_type.__custom_fields) for field in json_repr['fields']
+        }
+
+        record_type.__custom_fields[name] = record_type
 
         return record_type
 
@@ -692,7 +747,11 @@ class EnumType(ComplexType):
         return True
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'EnumType':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'EnumType':
         """Build an instance of the EnumType, based on a json representation of it.
 
         Args:
@@ -701,6 +760,9 @@ class EnumType(ComplexType):
         Returns:
             An newly created instance of EnumType, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields = {}
+
         cls._validate_json_repr(json_repr)
 
         symbols = json_repr['symbols']
@@ -786,19 +848,27 @@ class ArrayType(ComplexType):
         return True
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'ArrayType':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'ArrayType':
         """Build an instance of the ArrayType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a ArrayType, according to avro specification
+            custom_fields: Map of custom_fields used to build the records
 
         Returns:
             An newly created instance of ArrayType, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields = {}
+
         cls._validate_json_repr(json_repr)
 
         array_type = cls()
-        array_type.__items = ArrayType._get_field_from_json(json_repr['items'])
+        array_type.__items = ArrayType._get_field_from_json(json_repr['items'], custom_fields)
 
         return array_type
 
@@ -827,6 +897,7 @@ class UnionType(ComplexType):
           types: the list of Types that are allowed in the union type.
         """
         self.__types = types
+        self.__custom_fields = {}
 
     @property
     def types(self) -> Sequence[Type]:
@@ -866,29 +937,41 @@ class UnionType(ComplexType):
           ValueError: if the value is not valid according to the union type definition
         """
         for data_type in self.__types:
+            if isinstance(data_type, str):
+                return self.__custom_fields[data_type].validate(value)
+
             if data_type.check_type(value):
                 return data_type.validate(value)
 
         raise ValueError(f'The value [{value}] is not from one of the following types: [{self.__types}]')
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'UnionType':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'UnionType':
         """Build an instance of the UnionType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a UnionType, according to avro specification
+            custom_fields: Map of custom_fields used to build the records
 
         Returns:
             A newly created instance of UnionType, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields = {}
+
         for f in json_repr:
             if isinstance(f, list):
                 raise ValueError('Unions may not immediately contain other unions.')
 
-        map_type = cls()
-        map_type.__types = [ComplexType._get_field_from_json(t) for t in json_repr]
+        union_type = cls()
+        union_type.__custom_fields = custom_fields
+        union_type.__types = [ComplexType._get_field_from_json(t, custom_fields) for t in json_repr]
 
-        return map_type
+        return union_type
 
     def __repr__(self) -> str:  # pragma: no cover
         return f'UnionType <{self.__types}>'
@@ -959,19 +1042,27 @@ class MapType(ComplexType):
         return True
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'MapType':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'MapType':
         """Build an instance of the MapType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a MapType, according to avro specification
+            custom_fields: Map of custom_fields used to build the records
 
         Returns:
             A newly created instance of MapType, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields = {}
+
         cls._validate_json_repr(json_repr)
 
         map_type = cls()
-        map_type.__values = MapType._get_field_from_json(json_repr['values'])
+        map_type.__values = MapType._get_field_from_json(json_repr['values'], custom_fields)
 
         return map_type
 
@@ -1041,15 +1132,23 @@ class FixedType(ComplexType):
         return True
 
     @classmethod
-    def build(cls, json_repr: Union[Mapping[str, Any], Sequence[Any]]) -> 'FixedType':
+    def build(
+            cls,
+            json_repr: Union[Mapping[str, Any], Sequence[Any]],
+            custom_fields: Optional[Mapping[str, Type]] = None
+    ) -> 'FixedType':
         """Build an instance of the FixedType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a FixedType, according to avro specification
+            custom_fields: Map of custom_fields used to build the records
 
         Returns:
             A newly created instance of FixedType, based on the json representation
         """
+        if custom_fields is None:
+            custom_fields = {}
+
         cls._validate_json_repr(json_repr)
 
         fixed_type = cls()
