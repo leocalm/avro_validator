@@ -394,11 +394,8 @@ class RecordTypeField(ComplexType):
     def __build_field_type(
             cls,
             json_repr: Union[Mapping[str, Any], Sequence[Any]],
-            custom_fields: Optional[Mapping[str, Type]] = None
+            custom_fields: Mapping[str, Type]
     ) -> Type:
-        if custom_fields is None:
-            custom_fields = {}
-
         try:
             return cls._get_field_from_json(json_repr['type'], custom_fields)
         except ValueError as error:
@@ -499,15 +496,6 @@ class RecordType(ComplexType):
             The list of fields for the RecordType.
         """
         return self.__fields
-
-    @property
-    def name(self) -> str:
-        """Getter for the name of the RecordType.
-
-        Returns:
-            The name of the RecordType.
-        """
-        return self.__name
 
     def _validate_field(self, field_key: str, field_value: Any) -> bool:
         """Validates a field from the list of fields.
@@ -660,9 +648,6 @@ class RecordType(ComplexType):
 
         name = json_repr['name']
 
-        if custom_fields.get(name):
-            return custom_fields[name]
-
         custom_fields[name] = {}
 
         record_type = cls()
@@ -752,19 +737,17 @@ class EnumType(ComplexType):
     def build(
             cls,
             json_repr: Union[Mapping[str, Any], Sequence[Any]],
-            custom_fields: Optional[Mapping[str, Type]] = None
+            _: Optional[Mapping[str, Type]] = None
     ) -> 'EnumType':
         """Build an instance of the EnumType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a EnumType, according to avro specification
+            _: custom_fields used to build the schema
 
         Returns:
             An newly created instance of EnumType, based on the json representation
         """
-        if custom_fields is None:
-            custom_fields = {}
-
         cls._validate_json_repr(json_repr)
 
         symbols = json_repr['symbols']
@@ -813,6 +796,7 @@ class ArrayType(ComplexType):
           items_type: the type of the items in the array.
         """
         self.__items = items_type
+        self.__custom_fields = {}
 
     @property
     def items(self) -> Type:
@@ -843,9 +827,12 @@ class ArrayType(ComplexType):
             raise ValueError(f'The value [{value}] should be list but it is not.')
 
         for index, item in enumerate(value):
-            if not self.__items.check_type(item):
-                raise ValueError(f'The item at index [{index}]: [{item}] is not from the type [{self.__items}]')
-            self.__items.validate(item)
+            if isinstance(self.__items, str):
+                self.__custom_fields[self.__items].validate(item)
+            else:
+                if not self.__items.check_type(item):
+                    raise ValueError(f'The item at index [{index}]: [{item}] is not from the type [{self.__items}]')
+                self.__items.validate(item)
 
         return True
 
@@ -870,6 +857,7 @@ class ArrayType(ComplexType):
         cls._validate_json_repr(json_repr)
 
         array_type = cls()
+        array_type.__custom_fields = custom_fields
         array_type.__items = ArrayType._get_field_from_json(json_repr['items'], custom_fields)
 
         return array_type
@@ -1003,6 +991,7 @@ class MapType(ComplexType):
           values: the Type instance that represent the type of the values in the map
         """
         self.__values = values
+        self.__custom_fields = {}
 
     @property
     def values(self) -> Type:
@@ -1037,9 +1026,12 @@ class MapType(ComplexType):
             if not StringType().check_type(map_key):
                 raise ValueError(f'The key [{map_key}], value [{map_value}] is not from the type StringType')
 
-            if not self.__values.check_type(map_value):
-                raise ValueError(f'The key [{map_key}], value [{map_value}] is not from the type [{self.__values}]')
-            self.__values.validate(map_value)
+            if isinstance(self.__values, str):
+                self.__custom_fields[self.__values].validate(map_value)
+            else:
+                if not self.__values.check_type(map_value):
+                    raise ValueError(f'The key [{map_key}], value [{map_value}] is not from the type [{self.__values}]')
+                self.__values.validate(map_value)
 
         return True
 
@@ -1064,6 +1056,7 @@ class MapType(ComplexType):
         cls._validate_json_repr(json_repr)
 
         map_type = cls()
+        map_type.__custom_fields = custom_fields
         map_type.__values = MapType._get_field_from_json(json_repr['values'], custom_fields)
 
         return map_type

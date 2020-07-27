@@ -666,6 +666,92 @@ def test_custom_record_field():
     assert record_type.validate(data) is True
 
 
+def test_custom_array_field():
+    record_type = RecordType.build({
+        "name": "Bla",
+        "type": "record",
+        "fields": [
+            {
+                "name": "actor",
+                "type": {
+                    "name": "Actor",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "actedBy",
+                "type": {
+                    "type": "array",
+                    "items": "Actor"
+                }
+            }
+        ]
+    })
+
+    data = {
+        "actor": {
+            "name": "a"
+        },
+        "actedBy": [
+            {
+                "name": "a"
+            }, {
+                "name": "b"
+            }
+        ]
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_custom_map_field():
+    record_type = RecordType.build({
+        "name": "Bla",
+        "type": "record",
+        "fields": [
+            {
+                "name": "actor",
+                "type": {
+                    "name": "Actor",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "actedBy",
+                "type": {
+                    "type": "map",
+                    "values": "Actor"
+                }
+            }
+        ]
+    })
+
+    data = {
+        "actor": {
+            "name": "a"
+        },
+        "actedBy": {
+            "a": {
+                "name": "b"
+            }
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
 def test_recursive_record_field():
     record_type = RecordType.build({
         "name": "Actor",
