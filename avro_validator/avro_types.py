@@ -65,7 +65,8 @@ class ComplexType(Type):
 
         if not cls.optional_attributes.union(cls.required_attributes).issuperset(json_repr.keys()):
             raise ValueError(f'The {cls.__name__} can only contains '
-                             f'{cls.required_attributes.union(cls.optional_attributes)} keys')
+                             f'{cls.required_attributes.union(cls.optional_attributes)} keys, '
+                             f'but does contain also {set(json_repr.keys()).difference(cls.optional_attributes, cls.required_attributes)}')
 
         return True
 
