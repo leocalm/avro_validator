@@ -17,16 +17,16 @@ def main() -> None:
     )
     parser.add_argument(
         'data_file',
-        help='The path to a file containing the data to validate.',
+        nargs='?',
+        default='-',
+        type=argparse.FileType('r'),
+        help='The path to a file containing the data to validate '
+            '(default: read from stdin)',
     )
     args = parser.parse_args()
 
     if not os.path.exists(args.schema_file):
         print('ERROR: The schema file does not exist.')
-        sys.exit(1)
-
-    if not os.path.exists(args.data_file):
-        print('ERROR: The data file does not exist.')
         sys.exit(1)
 
     schema = Schema(args.schema_file)
@@ -37,7 +37,7 @@ def main() -> None:
         print('Error parsing the schema. Problem found:\n', error)
         sys.exit(1)
 
-    parsed_data = json.load(open(args.data_file, 'r'))
+    parsed_data = json.load(args.data_file)
 
     try:
         parsed_schema.validate(parsed_data)
