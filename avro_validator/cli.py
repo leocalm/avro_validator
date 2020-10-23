@@ -12,6 +12,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description='Validate json against avro schema.')
     parser.add_argument(
+        '-s', '--skip-extra-keys',
+        default=False,
+        action="store_true",
+        help='Skip the avro validation for all unknown fields.',
+    )
+    parser.add_argument(
         'schema_file',
         help='The path to the file containing the avro schema.',
     )
@@ -32,7 +38,7 @@ def main() -> None:
     schema = Schema(args.schema_file)
 
     try:
-        parsed_schema = schema.parse()
+        parsed_schema = schema.parse(args.skip_extra_keys)
     except ValueError as error:
         print('Error parsing the schema. Problem found:\n', error)
         sys.exit(1)

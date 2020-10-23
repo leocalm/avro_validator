@@ -59,11 +59,14 @@ class ComplexType(Type):
     optional_attributes: Set[str] = set()
 
     @classmethod
-    def _validate_json_repr(cls, json_repr: Mapping[str, Any]) -> bool:
+    def _validate_json_repr(
+            cls,
+            json_repr: Mapping[str, Any],
+            skip_extra_keys=False) -> bool:
         if cls.required_attributes.intersection(json_repr.keys()) != cls.required_attributes:
             raise ValueError(f'The {cls.__name__} must have {cls.required_attributes} defined.')
 
-        if not cls.optional_attributes.union(cls.required_attributes).issuperset(json_repr.keys()):
+        if not skip_extra_keys and not cls.optional_attributes.union(cls.required_attributes).issuperset(json_repr.keys()):
             raise ValueError(f'The {cls.__name__} can only contains '
                              f'{cls.required_attributes.union(cls.optional_attributes)} keys, '
                              f'but does contain also {set(json_repr.keys()).difference(cls.optional_attributes, cls.required_attributes)}')
@@ -416,13 +419,15 @@ class RecordTypeField(ComplexType):
     def build(
             cls,
             json_repr: Union[Mapping[str, Any], Sequence[Any]],
-            custom_fields: Optional[Mapping[str, Type]] = None
+            custom_fields: Optional[Mapping[str, Type]] = None,
+            skip_extra_keys=False,
     ) -> 'RecordTypeField':
         """Build an instance of the RecordTypeField, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a RecordTypeField, according to avro specification
             custom_fields: Map of custom_fields used to build the records
+            skip_extra_keys: Skip the avro validation for all unknown fields. Default to False
 
         Returns:
             An newly created instance of RecordTypeField, based on the json representation
@@ -430,7 +435,7 @@ class RecordTypeField(ComplexType):
         if custom_fields is None:
             custom_fields = {}
 
-        cls._validate_json_repr(json_repr)
+        cls._validate_json_repr(json_repr, skip_extra_keys=skip_extra_keys)
 
         field = cls()
 
@@ -635,13 +640,15 @@ class RecordType(ComplexType):
     def build(
             cls,
             json_repr: Union[Mapping[str, Any], Sequence[Any]],
-            custom_fields: Optional[Mapping[str, Type]] = None
+            custom_fields: Optional[Mapping[str, Type]] = None,
+            skip_extra_keys=False
     ) -> 'RecordType':
         """Build an instance of the RecordType, based on a json representation of it.
 
         Args:
             json_repr: The json representation of a RecordType, according to avro specification
             custom_fields: Map of custom_fields used to build the records
+            skip_extra_keys: Skip the avro validation for all unknown fields. Default to False
 
         Returns:
             An newly created instance of RecordType, based on the json representation
@@ -649,7 +656,7 @@ class RecordType(ComplexType):
         if custom_fields is None:
             custom_fields: Dict[str, RecordType] = {}
 
-        cls._validate_json_repr(json_repr)
+        cls._validate_json_repr(json_repr, skip_extra_keys=skip_extra_keys)
 
         name = json_repr['name']
 
@@ -662,8 +669,10 @@ class RecordType(ComplexType):
         record_type.__aliases = json_repr.get('aliases')
         record_type.__doc = json_repr.get('doc')
         record_type.__fields = {
-            field['name']: RecordTypeField.build(field,
-                                                 record_type.__custom_fields) for field in json_repr['fields']
+            field['name']: RecordTypeField.build(
+                field,
+                record_type.__custom_fields,
+                skip_extra_keys) for field in json_repr['fields']
         }
 
         record_type.__custom_fields[name] = record_type
