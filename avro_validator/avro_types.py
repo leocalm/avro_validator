@@ -64,6 +64,9 @@ class ComplexType(Type):
             raise ValueError(f'The {cls.__name__} must have {cls.required_attributes} defined.')
 
         if not cls.optional_attributes.union(cls.required_attributes).issuperset(json_repr.keys()):
+            print("JSON", json_repr)
+            print('KEYS in schema: ', json_repr.keys())
+            print('KEYS allowed: ', cls.optional_attributes.union(cls.required_attributes))
             raise ValueError(f'The {cls.__name__} can only contains '
                              f'{cls.required_attributes.union(cls.optional_attributes)} keys')
 
@@ -252,7 +255,7 @@ class FloatType(Type):
     Attributes:
       python_type: The python type associated with the float avro type.
     """
-    python_type = float
+    python_type = (float,int)
 
     def validate(self, value: Any) -> bool:
         """Checks if the value can be used as an float.
@@ -290,7 +293,7 @@ class DoubleType(Type):
     Attributes:
       python_type: The python type associated with the double avro type.
     """
-    python_type = float
+    python_type = (float, int)
 
     def validate(self, value: Any) -> bool:
         """Checks if the value can be used as an double.
@@ -365,7 +368,7 @@ class RecordTypeField(ComplexType):
     """
 
     required_attributes: Set[str] = {'name', 'type'}
-    optional_attributes: Set[str] = {'doc', 'default', 'order', 'aliases'}
+    optional_attributes: Set[str] = {'doc', 'default', 'order', 'aliases', 'logicalType'}
 
     def __init__(self, name: str = None, field_type: Type = None) -> None:
         """Inits RecordTypeField with the fields.

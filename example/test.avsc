@@ -1,0 +1,2573 @@
+{
+  "doc": "This will contain telemetry for each device",
+  "fields": [{
+      "doc": "The Type of Record.",
+      "name": "recordType",
+      "type": "string"
+    },
+    {
+      "doc": "Version of the record.",
+      "name": "recordVersion",
+      "type": "string"
+    },
+    {
+      "default": 0,
+      "doc": "Timestamp of the time of reporting.",
+      "logicalType": "timestamp-millis",
+      "name": "recordedAt",
+      "type": "long"
+    },
+    {
+      "name": "deviceInfo",
+      "type": {
+        "doc": "This will contain deviceInfo Schema.",
+        "fields": [{
+            "doc": "deviceType.",
+            "name": "deviceType",
+            "type": "string"
+          },
+          {
+            "doc": "The Device Name.",
+            "name": "deviceName",
+            "type": "string"
+          },
+          {
+            "doc": "The Device Manager.",
+            "name": "deviceManager",
+            "type": "string"
+          },
+          {
+            "doc": "The Platform Model.",
+            "name": "platformModel",
+            "type": "string"
+          },
+          {
+            "doc": "The Serial Number.",
+            "name": "serialNumber",
+            "type": "string"
+          },
+          {
+            "default": 0,
+            "doc": "System Uptime.",
+            "logicalType": "timestamp-millis",
+            "name": "systemUptime",
+            "type": "long"
+          },
+          {
+            "doc": "Products unique device identifier",
+            "name": "udiProductIdentifier",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "doc": " Smart license product instance identifier",
+            "name": "smartLicenseProductInstanceIdentifier",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "doc": "Smart license virtual account name",
+            "name": "smartLicenseVirtualAccountName",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "name": "hotfixes",
+            "type": {
+              "type": "array",
+              "items": {
+                "fields": [{
+                    "default": "",
+                    "name": "name",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  {
+                    "name": "patchOverlap",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  }
+                ],
+                "name": "hotFixInfo",
+                "type": "record"
+              }
+            }
+          },
+          {
+            "doc": "List of patches installed (including major upgrades)",
+            "name": "patchHistory",
+            "type": {
+              "type": "array",
+              "items": {
+                "name": "version",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "name": "deviceInfo_record",
+        "type": "record"
+      }
+    },
+    {
+      "name": "versions",
+      "type": {
+        "doc": "This will contain Version Details.",
+        "fields": [{
+          "doc": "Items",
+          "name": "items",
+          "type": {
+            "items": {
+              "doc": "This will contain Version Items.",
+              "fields": [{
+                  "default": "",
+                  "doc": "The Type of Version.",
+                  "name": "type",
+                  "type": "string"
+                },
+                {
+                  "default": "",
+                  "doc": "The Version.",
+                  "name": "version",
+                  "type": "string"
+                },
+                {
+                  "default": 0,
+                  "doc": "The Last Updated.",
+                  "logicalType": "timestamp-millis",
+                  "name": "lastUpdated",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                }
+              ],
+              "name": "versionItem_record",
+              "type": "record"
+            },
+            "type": "array"
+          }
+        }],
+        "name": "version_schema",
+        "type": "record"
+      }
+    },
+    {
+      "name": "licenseActivated",
+      "type": {
+        "doc": "This will contain License Activated Details.",
+        "fields": [{
+          "doc": "List od license activated for the product",
+          "name": "items",
+          "type": {
+            "items": {
+              "doc": "This will contain License Items.",
+              "fields": [{
+                  "default": "",
+                  "doc": "The Type of License.",
+                  "name": "type",
+                  "type": "string"
+                },
+                {
+                  "default": 0,
+                  "doc": "The Count for the license.",
+                  "name": "count",
+                  "type": "double"
+                },
+                {
+                  "default": null,
+                  "doc": "The license grace period state.",
+                  "name": "state",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                {
+                  "default": null,
+                  "doc": "The total license grace period days.",
+                  "name": "totalDays",
+                  "type": [
+                    "int",
+                    "null"
+                  ]
+                },
+                {
+                  "default": null,
+                  "doc": "The used license grace period days.",
+                  "name": "usedDays",
+                  "type": [
+                    "int",
+                    "null"
+                  ]
+                }
+              ],
+              "name": "licenseItem_record",
+              "type": "record"
+            },
+            "type": "array"
+          }
+        }],
+        "name": "licenseActivated_schema",
+        "type": "record"
+      }
+    },
+    {
+      "name": "systemHealth",
+      "type": {
+        "doc": "This will contain System Health.",
+        "fields": [{
+            "name": "cpuUsage",
+            "type": {
+              "doc": "This will contain Items Schema.",
+              "fields": [{
+                  "default": 0,
+                  "doc": "The start Time.",
+                  "logicalType": "timestamp-millis",
+                  "name": "startTime",
+                  "type": "long"
+                },
+                {
+                  "default": 0,
+                  "doc": "The end Time.",
+                  "logicalType": "timestamp-millis",
+                  "name": "endTime",
+                  "type": "long"
+                },
+                {
+                  "default": 0,
+                  "doc": "avg Percent.",
+                  "name": "avgPercent",
+                  "type": "double"
+                },
+                {
+                  "default": 0,
+                  "doc": "peak Percent.",
+                  "name": "peakPercent",
+                  "type": "double"
+                },
+                {
+                  "doc": "[cpuUsage]Peak time data list.",
+                  "name": "peakTimes",
+                  "type": "string"
+                }
+              ],
+              "name": "cpuUsageItems_schema",
+              "type": "record"
+            }
+          },
+          {
+            "name": "memoryUsage",
+            "type": {
+              "doc": "This will contain Items Schema.",
+              "fields": [{
+                  "default": 0,
+                  "doc": "The Start Time.",
+                  "logicalType": "timestamp-millis",
+                  "name": "startTime",
+                  "type": "long"
+                },
+                {
+                  "default": 0,
+                  "doc": "End Time.",
+                  "logicalType": "timestamp-millis",
+                  "name": "endTime",
+                  "type": "long"
+                },
+                {
+                  "default": 0,
+                  "doc": "avg Percent.",
+                  "name": "avgPercent",
+                  "type": "double"
+                },
+                {
+                  "default": 0,
+                  "doc": "peak Percent.",
+                  "name": "peakPercent",
+                  "type": "double"
+                },
+                {
+                  "doc": "[memoryUsage]List of peak start and end times.",
+                  "name": "peakTimes",
+                  "type": "string"
+                }
+              ],
+              "name": "memoryUsageItems_schema",
+              "type": "record"
+            }
+          },
+          {
+            "name": "diskUsage",
+            "type": {
+              "doc": "This will contain disk Usage Schema.",
+              "fields": [{
+                  "default": 0,
+                  "doc": "The usedGb.",
+                  "name": "usedGb",
+                  "type": "double"
+                },
+                {
+                  "default": 0,
+                  "doc": "freeGb.",
+                  "name": "freeGb",
+                  "type": "double"
+                },
+                {
+                  "default": 0,
+                  "doc": "totalGb.",
+                  "name": "totalGb",
+                  "type": "double"
+                }
+              ],
+              "name": "diskUsage_schema",
+              "type": "record"
+            }
+          },
+          {
+            "name": "throughputUsage",
+            "type": {
+              "doc": "This will contain Items Schema.",
+              "fields": [{
+                "name": "items",
+                "type": {
+                  "items": {
+                    "fields": [{
+                        "default": 0,
+                        "doc": "The Start Time.",
+                        "logicalType": "timestamp-millis",
+                        "name": "startTime",
+                        "type": "long"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "avg End Time.",
+                        "logicalType": "timestamp-millis",
+                        "name": "endTime",
+                        "type": "long"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "avg Bps.",
+                        "name": "avgBps",
+                        "type": "double"
+                      },
+                      {
+                        "doc": "[thruputUsage]List of peak start and end times.",
+                        "name": "peakTimes",
+                        "type": "string"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "peakBps.",
+                        "name": "peakBps",
+                        "type": "double"
+                      }
+                    ],
+                    "name": "thruputItems_record",
+                    "type": "record"
+                  },
+                  "type": "array"
+                }
+              }],
+              "name": "thruputItems_schema",
+              "type": "record"
+            }
+          },
+          {
+            "name": "featureUsage",
+            "type": {
+              "doc": "This will contain Feature Usage",
+              "fields": [{
+                  "name": "urlFiltering",
+                  "type": {
+                    "doc": "This will contain URL Filtering Schema.",
+                    "fields": [{
+                        "default": 0,
+                        "doc": "Number of Accesss rules with URL categories.",
+                        "name": "numAccessRulesWithUrlCategories",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of Unique URL categories referenced.",
+                        "name": "numUniqueUrlCategoriesReferenced",
+                        "type": "int"
+                      }
+                    ],
+                    "name": "urlFiltering_schema",
+                    "type": "record"
+                  }
+                },
+                {
+                  "name": "malware",
+                  "type": {
+                    "doc": "This will contain Malware Schema.",
+                    "fields": [{
+                        "default": 0,
+                        "doc": "Number of Access rules with malware.",
+                        "name": "numAccessRulesWithMalware",
+                        "type": "int"
+                      },
+                      {
+                        "doc": "Malware profile names.",
+                        "name": "malwareProfileNames",
+                        "type": {
+                          "items": "string",
+                          "type": "array"
+                        }
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active File policies with inspect archives enabled.",
+                        "name": "inspectArchiveEnabledPolicies",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active File policies with clean list enabled.",
+                        "name": "cleanListEnabledPolicies",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of SHA's in the clean list.",
+                        "name": "cleanListHashCount",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active File policies with custom detection enabled.",
+                        "name": "customDetectionListEnabledPolicies",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of SHA's in the custom detection list.",
+                        "name": "customDetectionHashCount",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active file rules with capture files enabled.",
+                        "name": "captureFileEnabledRules",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active file rules with rule action as local malware analysis.",
+                        "name": "localMalwareAnalysisEnabledRules",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active file rules with rule action as malware block.",
+                        "name": "malwareBlockRules",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active file rules with rule action as malware cloud lookup.",
+                        "name": "malwareCloudLookupRules",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active file rules with rule action as detect files.",
+                        "name": "detectFileRules",
+                        "type": "int"
+                      },
+                      {
+                        "default": 0,
+                        "doc": "Number of active file rules with rule action as block files.",
+                        "name": "blockFileRules",
+                        "type": "int"
+                      },
+                      {
+                        "default": "0",
+                        "doc": "Total size of all captured files stored in the device.",
+                        "name": "capturedFileDiskUsage",
+                        "type": "string"
+                      }
+                    ],
+                    "name": "malware_schema",
+                    "type": "record"
+                  }
+                },
+                {
+                  "name": "threat",
+                  "type": {
+                    "doc": "This will contain Threat Schema.",
+                    "fields": [{
+                        "default": 0,
+                        "doc": "The policyCount.",
+                        "name": "numAccessRulesWithThreat",
+                        "type": "int"
+                      },
+                      {
+                        "doc": "IPSPolicyNames.",
+                        "name": "ipsPolicyNames",
+                        "type": {
+                          "items": "string",
+                          "type": "array"
+                        }
+                      }
+                    ],
+                    "name": "threat_schema",
+                    "type": "record"
+                  }
+                }
+              ],
+              "name": "featureUsage_Schema",
+              "type": "record"
+            }
+          }
+        ],
+        "name": "systemHealth_record",
+        "type": "record"
+      }
+    },
+    {
+      "name": "userAgentStats",
+      "doc": "This will contain userAgentStats array.",
+      "type": {
+        "items": {
+          "doc": "List of all user agents and respective usage statistics.",
+          "fields": [{
+              "doc": "User Agent.",
+              "name": "userAgent",
+              "type": "string"
+            },
+            {
+              "name": "urlFrequencyMap",
+              "type": {
+                "items": {
+                  "fields": [{
+                      "name": "url",
+                      "type": "string"
+                    },
+                    {
+                      "name": "count",
+                      "type": "int"
+                    }
+                  ],
+                  "name": "urlFrequencyMaps",
+                  "type": "record"
+                },
+                "type": "array"
+              }
+            },
+            {
+              "doc": "The total number of times user agent is present in apache log files.",
+              "name": "userAgentFrequency",
+              "type": "int"
+            }
+          ],
+          "name": "userAgentStats",
+          "type": "record"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "name": "snort3RuntimeStatistics",
+      "type": [
+        "null",
+        {
+          "name": "snort3RuntimeStatistics",
+          "type": "record",
+          "fields": [{
+              "name": "ftpStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "ftpStatistics",
+                  "type": "record",
+                  "fields": [{
+                      "name": "ftpDataBytesProcessed",
+                      "type": "int"
+                    },
+                    {
+                      "name": "maxFTPsessions",
+                      "type": "int"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "httpStatistics",
+              "doc": "snort HTTP service inspector statistics",
+              "type": [
+                "null",
+                {
+                  "name": "httpStatistics",
+                  "type": "record",
+                  "fields": [{
+                      "name": "httpDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "default": 0
+                    },
+                    {
+                      "name": "maxHTTPSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of HTTP sessions reached in the sample interval",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "sessionStatistics",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "sessionStatistics",
+                  "doc": "snort3 session management statistics",
+                  "fields": [{
+                      "name": "prunedSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Sessions Pruned due to flow cache is full or flow memcap reached.",
+                      "default": 0
+                    },
+                    {
+                      "name": "midStreamSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Sessions for which snort did not see the start of the flow.",
+                      "default": 0
+                    },
+                    {
+                      "name": "maxTCPSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of TCP sessions reached during the sampling interval.",
+                      "default": 0
+                    },
+                    {
+                      "name": "tcpDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of TCP data bytes received or processed.",
+                      "default": 0
+                    },
+                    {
+                      "name": "maxUDPSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of UDP sessions reached during the sampling interval.",
+                      "default": 0
+                    },
+                    {
+                      "name": "udpDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of UDP data bytes received or processed.",
+                      "default": 0
+                    },
+                    {
+                      "name": "maxIPSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of IP sessions reached during the sampling interval. These are IP based but non TCP/UDP/ICMP sessions",
+                      "default": 0
+                    },
+                    {
+                      "name": "maxElephantFlows",
+                      "type": [
+                        "null",
+                        "long"
+                      ]
+                    },
+                    {
+                      "name": "ipDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of IP sessions data bytes received or processed. These are IP based but non TCP/UDP/ICMP sessions",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "snortLatency",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "snortLatency",
+                  "doc": "snort3 latency statistics",
+                  "fields": [{
+                      "name": "packetTimeouts",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of packets that exceeded total detection time threshold",
+                      "default": 0
+                    },
+                    {
+                      "name": "totalPacketsMonitored",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of packets monitored for latency",
+                      "default": 0
+                    },
+                    {
+                      "name": "totalTimeSpentInDetection",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total time spent in detection.",
+                      "default": 0
+                    },
+                    {
+                      "name": "maxTimeSpent",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum time spent in detection.",
+                      "default": 0
+                    },
+                    {
+                      "name": "totalNumberOfRuleEvalauations",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of rules evalauted.",
+                      "default": 0
+                    },
+                    {
+                      "name": "ruleEvaluationsExceededLatency",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of rules which exceeded latency.",
+                      "default": 0
+                    },
+                    {
+                      "name": "rulesReenabled",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of rules that got reenabled after suspension.",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "smtpStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "smtpStatistics",
+                  "type": "record",
+                  "doc": "snort SMTP network inspector statistics",
+                  "fields": [{
+                      "name": "maxSMTPSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of SMTP sessions reached in the sample interval",
+                      "default": 0
+                    },
+                    {
+                      "name": "smtpDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of SMTP data bytes received or processed by SMTP network inspector.",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "popStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "popStatistics",
+                  "type": "record",
+                  "doc": "snort3 POP service inspector statistics",
+                  "fields": [{
+                      "name": "maxPOPSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of POP sessions reached in the sample interval",
+                      "default": 0
+                    },
+                    {
+                      "name": "popDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of POP data bytes received or processed by POP network inspector.",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "sshStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "sshStatistics",
+                  "type": "record",
+                  "doc": "snort3 SSH service inspector statistics",
+                  "fields": [{
+                      "name": "maxSshSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of SSH sessions reached in the sample interval",
+                      "default": 0
+                    },
+                    {
+                      "name": "sshDataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Total number of SSH data bytes received or processed by SSH network inspector.",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "sslStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "sslStatistics",
+                  "type": "record",
+                  "doc": "SSL service inspector statistics",
+                  "fields": [{
+                      "name": "packetsProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of ssl packets processed",
+                      "default": 0
+                    },
+                    {
+                      "name": "sessionsIgnored",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of ssl sessions ignored",
+                      "default": 0
+                    },
+                    {
+                      "name": "maxSslSessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of ssl sessions ignored",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "snortExitStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "snortExitStatistics",
+                  "type": "record",
+                  "doc": "Snort3 exit statistics",
+                  "fields": [{
+                      "name": "cleanExits",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of times snort3 exited cleanly",
+                      "default": 0
+                    },
+                    {
+                      "name": "unexpectedExits",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of times snort3 exited unexpectedly",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "snortCrashInfoStatistics",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "record",
+                    "name": "snortCrashInfoStatistics",
+                    "fields": [{
+                        "name": "appid_version",
+                        "type": "string"
+                      },
+                      {
+                        "name": "backtrace",
+                        "type": {
+                          "type": "array",
+                          "items": "string"
+                        }
+                      },
+                      {
+                        "name": "daq_msg_data_len",
+                        "type": "long"
+                      },
+                      {
+                        "name": "daq_msg_header_len",
+                        "type": "long"
+                      },
+                      {
+                        "name": "daq_msg_type",
+                        "type": "long"
+                      },
+                      {
+                        "name": "ims_build",
+                        "type": "string"
+                      },
+                      {
+                        "name": "ims_version",
+                        "type": "string"
+                      },
+                      {
+                        "name": "lsp_version",
+                        "type": "string"
+                      },
+                      {
+                        "name": "model",
+                        "type": "string"
+                      },
+                      {
+                        "name": "model_number",
+                        "type": "string"
+                      },
+                      {
+                        "name": "navl_version",
+                        "type": "string"
+                      },
+                      {
+                        "name": "pid",
+                        "type": "long"
+                      },
+                      {
+                        "name": "signal",
+                        "type": "long"
+                      },
+                      {
+                        "name": "snort_build",
+                        "type": "string"
+                      },
+                      {
+                        "name": "snort_version",
+                        "type": "string"
+                      },
+                      {
+                        "name": "ssp_build",
+                        "type": "string"
+                      },
+                      {
+                        "name": "timestamp",
+                        "type": "string"
+                      },
+                      {
+                        "name": "vdb_build",
+                        "type": "string"
+                      },
+                      {
+                        "name": "vdb_version",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "xtlsStatistics",
+              "type": [
+                "null",
+                {
+                  "name": "xtlsStatistics",
+                  "type": "record",
+                  "doc": "xTLS service inspector statistics",
+                  "fields": [{
+                      "name": "cert_dnd_verdicts",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of certificate do not decrypt verdicts",
+                      "default": 0
+                    },
+                    {
+                      "name": "cert_dr_verdicts",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of certificate decrypt resign verdicts",
+                      "default": 0
+                    },
+                    {
+                      "name": "cert_drk_verdicts",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of certificate decrypt replace key verdicts",
+                      "default": 0
+                    },
+                    {
+                      "name": "cert_dkk_verdicts",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of certificate decrypt known key verdicts",
+                      "default": 0
+                    },
+                    {
+                      "name": "cert_dp_verdicts",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of certificate decrypt proxy verdicts",
+                      "default": 0
+                    },
+                    {
+                      "name": "client_hello_definitive_dnd",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of client hello messages that determined definitive dnd",
+                      "default": 0
+                    },
+                    {
+                      "name": "flow_over_subscriptions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of over subscriptions processed",
+                      "default": 0
+                    },
+                    {
+                      "name": "negotiated_ssl_version_3_0",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of SSL 3.0 sessions negotiated",
+                      "default": 0
+                    },
+                    {
+                      "name": "negotiated_tls_version_1_0",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of TLS 1.0 sessions negotiated",
+                      "default": 0
+                    },
+                    {
+                      "name": "negotiated_tls_version_1_1",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of TLS 1.1 sessions negotiated",
+                      "default": 0
+                    },
+                    {
+                      "name": "negotiated_tls_version_1_2",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of TLS 1.2 sessions negotiated",
+                      "default": 0
+                    },
+                    {
+                      "name": "negotiated_tls_version_1_3",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of TLS 1.3 sessions negotiated",
+                      "default": 0
+                    },
+                    {
+                      "name": "decrypted_tls_1_3_flows",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of decrypted TLS 1.3 flows",
+                      "default": 0
+                    },
+                    {
+                      "name": "requested_esni",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Number of times ESNI is requested",
+                      "default": 0
+                    },
+                    {
+                      "name": "negotiatedCiphers",
+                      "type": [
+                        "null",
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "doc": "Top ten negotiated ciphers"
+                    },
+                    {
+                      "name": "unsupportedCiphers",
+                      "type": [
+                        "null",
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "doc": "Top ten unsupported ciphers"
+                    },
+                    {
+                      "name": "droppedCiphers",
+                      "type": [
+                        "null",
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "doc": "Top ten dropped ciphers"
+                    },
+                    {
+                      "name": "badCertificate",
+                      "type": [
+                        "null",
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "doc": "Top 50 urls where clients sent bad certificate alerts"
+                    },
+                    {
+                      "name": "certificateUnknown",
+                      "type": [
+                        "null",
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "doc": "Top 50 urls where clients sent unknown certificate alerts"
+                    },
+                    {
+                      "name": "unknownCertificateAuthority",
+                      "type": [
+                        "null",
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ],
+                      "doc": "Top 50 urls where clients sent unknown certificate authority alerts"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "http2Statistics",
+              "doc": "snort HTTP service inspector statistics",
+              "type": [
+                "null",
+                {
+                  "name": "http2Statistics",
+                  "type": "record",
+                  "fields": [{
+                      "name": "http2DataBytesProcessed",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "default": 0
+                    },
+                    {
+                      "name": "maxHTTP2Sessions",
+                      "type": [
+                        "long",
+                        "null"
+                      ],
+                      "doc": "Maximum number of HTTP sessions reached in the sample interval",
+                      "default": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "identityUsageStats",
+      "doc": "Contains identity usage statistics",
+      "type": {
+        "name": "identityUsageStats_record",
+        "type": "record",
+        "fields": [{
+            "default": 0,
+            "doc": "Total number of Identity Rules",
+            "name": "numberOfIdentityRules",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Total number of active Identity Rules",
+            "name": "activeRules",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Total number of passive Identity Rules  ",
+            "name": "passiveRules",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Total number of No Auth Identity Rules",
+            "name": "noAuthRules",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Total number of passive Identity Rules with RealmSequence",
+            "name": "passiveRulesWithRealmSequence",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Total number of Active Directory Realms",
+            "name": "numberOfRealms",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Total number of Realm Sequence",
+            "name": "numberOfRealmSequence",
+            "type": [
+              "long",
+              "null"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "accessControlStats",
+      "doc": "Contains identity usage statistics",
+      "type": {
+        "name": "accessControlStats_record",
+        "type": "record",
+        "fields": [{
+            "default": 0,
+            "doc": "Total number of access rules",
+            "name": "numberOfAcRules",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of access rules with realms",
+            "name": "rulesWithRealmReference",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of access rules with users",
+            "name": "rulesWithUserReference",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of access rules with users and groups",
+            "name": "rulesWithUserGroupReference",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of access rules with unique realms",
+            "name": "numberOfUniqueRealmsReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of access rules with unique users",
+            "name": "numberOfUniqueUsersReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of access rules with unique users and groups",
+            "name": "numberOfUniqueUserGroupsReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "name": "userOrGroupsReferencedStats",
+            "doc": "User or Groups Referenced Statistics",
+            "type": {
+              "name": "userOrGroupsReferencedStats_record",
+              "type": "record",
+              "fields": [{
+                  "default": 0,
+                  "doc": "Average number of access rules with users and groups",
+                  "name": "avg",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "doc": "Maximum number of access rules with users and groups",
+                  "name": "max",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "doc": "Minimum number of access rules with users and groups",
+                  "name": "min",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "vpnProfileStats",
+      "doc": "Contains VPN Profile statistics",
+      "type": {
+        "name": "vpnProfileStats_record",
+        "type": "record",
+        "fields": [{
+            "default": 0,
+            "doc": "Number of vpn profiles with unique realm",
+            "name": "uniqueRealmsReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of vpn profiles with unique radius",
+            "name": "uniqueRadiusServerReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": false,
+            "doc": "Is local realm referenced in vpn profile",
+            "name": "localRealmReferenced",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          {
+            "default": false,
+            "doc": "Is fallback local realm referenced in vpn profile",
+            "name": "fallBackWithLocalRealmConfigured",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of local users in vpn profile",
+            "name": "numberOfLocalUsers",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of vpn profiles with default OS browser login experience ",
+            "name": "numberOfExternalBrowserRaVpnProfiles",
+            "type": [
+              "long",
+              "null"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "sslRulesStats",
+      "doc": "Contains SSL Rules usage statistics",
+      "type": {
+        "name": "sslRulesStats_record",
+        "type": "record",
+        "fields": [{
+            "default": 0,
+            "doc": "Total number of SSL Rules",
+            "name": "numberOfSSLRules",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of SSL rules with realm",
+            "name": "rulesWithRealmReference",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of SSL rules with user",
+            "name": "rulesWithUserReference",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of SSL rules with Users and Groups",
+            "name": "rulesWithUserGroupReference",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of SSL rules with Unique realms",
+            "name": "numberOfUniqueRealmsReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of SSL rules with Unique users",
+            "name": "numberOfUniqueUsersReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "default": 0,
+            "doc": "Number of SSL rules with Unique users and group",
+            "name": "numberOfUniqueUserGroupsReferenced",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "name": "userOrGroupsReferencedStats",
+            "doc": "User or Groups Referenced Statistics",
+            "type": {
+              "name": "userOrGroupsReferencedStats_record_ssl",
+              "type": "record",
+              "fields": [{
+                  "default": 0,
+                  "doc": "Average number of SSL rules with users and groups",
+                  "name": "avg",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "doc": "Maximum number of SSL rules with users and groups",
+                  "name": "max",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "doc": "Minimum number of SSL rules with users and groups",
+                  "name": "min",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "intrusionUsageStats",
+      "doc": "Contains Intrusion usage statistics",
+      "type": {
+        "name": "intrusionUsageStats_record",
+        "type": "record",
+        "fields": [{
+            "default": 0,
+            "name": "customIntrusionPolicyCount",
+            "doc": "Total number of custom policies including pre-created ones",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "name": "customIntrusionRuleGroupCount",
+            "doc": "Total number of custom intrusion rule groups created",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "name": "customIntrusionRuleCount",
+            "doc": "Total number of custom intrusion rules created",
+            "type": [
+              "long",
+              "null"
+            ]
+          },
+          {
+            "name": "ruleGroupsData",
+            "doc": "List of custom rule groups",
+            "type": {
+              "type": "array",
+              "items": {
+                "name": "ruleGroupsData_item",
+                "type": "record",
+                "fields": [{
+                  "name": "numberOfRules",
+                  "doc": "Number custom rules contained by this rule group",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                }]
+              }
+            }
+          },
+          {
+            "name": "policyInUse",
+            "doc": "List of policies used in ACR",
+            "type": {
+              "type": "array",
+              "items": {
+                "name": "policyData",
+                "type": "record",
+                "fields": [{
+                    "default": "",
+                    "name": "basePolicyName",
+                    "doc": "Base policy name",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  {
+                    "default": 0,
+                    "name": "usedByAcRuleCount",
+                    "doc": "Number of ACR using this policy",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "default": 0,
+                    "name": "rulesOverridden",
+                    "doc": "Number of TALOS Rules overridden",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "default": 0,
+                    "name": "ruleGroupsAdded",
+                    "doc": "Number of TALOS groups added to the policy",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "default": 0,
+                    "name": "ruleGroupsRemoved",
+                    "doc": "Number of TALOS groups removed from the policy",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "default": 0,
+                    "name": "ruleGroupsOverridden",
+                    "doc": "Number of TALOS groups overridden",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "name": "customRulesOverridden",
+                    "doc": "Number of custom rules overridden in the policy",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "name": "customGroupsEnabled",
+                    "doc": "Number of custom groups enabled in the policy",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  },
+                  {
+                    "name": "customRulesEnabled",
+                    "doc": "Number of custom rules enabled in the policy",
+                    "type": [
+                      "long",
+                      "null"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "haUsageStats",
+      "doc": "Contains Intrusion usage statistics",
+      "type": {
+        "name": "haUsageStats_record",
+        "type": "record",
+        "fields": [{
+            "default": false,
+            "name": "haConfigured",
+            "doc": "true if HA is configured, else false",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          {
+            "default": false,
+            "name": "failoverAndStatefulShareInterface",
+            "doc": "true if failover and stateful interface is same, else false",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          {
+            "default": "",
+            "name": "failoverInterfaceType",
+            "doc": "Interface type used for failover link - PhysicalInterface or EtherChannelInterface",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "default": "",
+            "name": "statefulInterfaceType",
+            "doc": "Interface type used for stateful link - PhysicalInterface or EtherChannelInterface",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "default": false,
+            "name": "sharedKeyConfigured",
+            "doc": "true if failover link is encrypted",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          {
+            "name": "failoverThreshold",
+            "doc": "FAILOVER THRESHOLD configuration",
+            "type": {
+              "name": "failoverThreshold_record",
+              "type": "record",
+              "fields": [{
+                  "default": 0,
+                  "name": "peerPollTimeMSecs",
+                  "doc": "How often to send hello packets across the failover link (in Milli Secs)",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "peerHoldTimeMSecs",
+                  "doc": "How long to wait before making a failover assessment after not receiving a reply to a peer poll packet (in Milli Secs)",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "interfacePollTimeMSecs",
+                  "doc": "How often the hello packets are sent across interfaces (in Milli Secs)",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "interfaceHoldTimeMSecs",
+                  "doc": "how long to wait before failure assessment when a hello packet is not replied back (in Milli Secs)",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "interfaceFailureThreshold",
+                  "doc": "number of Interfaces to fail before triggering failover",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "enabledInterfaces",
+            "doc": "Enabled interface configuration related to HA excluding HA interfaces. Could be - Physical, Sub, EtherChannel, VirtualTunnel or Vlan.",
+            "type": {
+              "name": "enabledInterfaces_record",
+              "type": "record",
+              "fields": [{
+                  "default": 0,
+                  "name": "count",
+                  "doc": "Number of interfaces enabled",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "monitored",
+                  "doc": "Number of interfaces monitored",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "standbyIpConfigured",
+                  "doc": "Number of interfaces having both active and standby IP for v4 and/or v6",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                },
+                {
+                  "default": 0,
+                  "name": "activeAndStandbyMacConfigured",
+                  "doc": "Number of interfaces having both active and standby mac configured",
+                  "type": [
+                    "long",
+                    "null"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ftdMemoryCGroupStatistics",
+      "type": [
+        "null",
+        {
+          "items": {
+            "doc": "List of all memory cgroups and respective usage statistics.",
+            "fields": [{
+                "doc": "memory cgroup name",
+                "name": "memoryCGroupName",
+                "type": "string"
+              },
+              {
+                "doc": "mean memory usage (in bytes) over a 24 hour period",
+                "name": "meanMemoryUsageBytes",
+                "type": "float"
+              },
+              {
+                "doc": "max memory usage (in bytes) seen in a 24 hour period",
+                "name": "peakMemoryUsageBytes",
+                "type": "long"
+              },
+              {
+                "doc": "standard deviation in the memory usage (in bytes) across a 24 hour period",
+                "name": "stdDevMemoryUsageBytes",
+                "type": [
+                  "float",
+                  "null"
+                ]
+              },
+              {
+                "doc": "mean swap memory usage (in bytes) over a 24 hour period",
+                "name": "meanMemorySwapUsageBytes",
+                "type": "float"
+              },
+              {
+                "doc": "max swap memory usage (in bytes) seen in a 24 hour period",
+                "name": "peakMemorySwapUsageBytes",
+                "type": "long"
+              },
+              {
+                "doc": "standard deviation in the swap memory usage (in bytes) across a 24 hour period",
+                "name": "stdDevMemorySwapUsage",
+                "type": [
+                  "float",
+                  "null"
+                ]
+              },
+              {
+                "name": "stdDevMemoryUsage",
+                "type": [
+                  "float",
+                  "null"
+                ]
+              }
+            ],
+            "name": "ftdMemoryCGroupStatistics",
+            "type": "record"
+          },
+          "type": "array"
+        }
+      ]
+    },
+    {
+      "name": "ftdProcessExitStatistics",
+      "type": [
+        "null",
+        {
+          "items": {
+            "doc": "List of all FTD process exit statistics.",
+            "fields": [{
+                "doc": "FTD process name",
+                "name": "processName",
+                "type": "string"
+              },
+              {
+                "name": "crashInfo",
+                "type": [{
+                    "items": {
+                      "doc": "Crashinfo details generated when process exited, currently this is only dumped for snort3 process",
+                      "fields": [{
+                          "name": "appid_version",
+                          "type": "string"
+                        },
+                        {
+                          "name": "backtrace",
+                          "type": {
+                            "items": {
+                              "name": "backtraceStrings",
+                              "type": "string"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        {
+                          "name": "daq_msg_data_len",
+                          "type": "long"
+                        },
+                        {
+                          "name": "daq_msg_header_len",
+                          "type": "long"
+                        },
+                        {
+                          "name": "daq_msg_type",
+                          "type": "long"
+                        },
+                        {
+                          "name": "model_number",
+                          "type": "string"
+                        },
+                        {
+                          "name": "navl_version",
+                          "type": "string"
+                        },
+                        {
+                          "name": "pid",
+                          "type": "long"
+                        },
+                        {
+                          "name": "signal",
+                          "type": "int"
+                        },
+                        {
+                          "name": "ssp_build",
+                          "type": "string"
+                        },
+                        {
+                          "name": "timestamp",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "crashInfo",
+                      "type": "record"
+                    },
+                    "type": "array"
+                  },
+                  "null"
+                ]
+              },
+              {
+                "name": "oomKillStats",
+                "type": [{
+                    "items": {
+                      "doc": "List of oom-kill events in a 24hr period",
+                      "fields": [{
+                          "name": "invokingProcess",
+                          "type": "string"
+                        },
+                        {
+                          "name": "killTimestamp",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "oomKillStats",
+                      "type": "record"
+                    },
+                    "type": "array"
+                  },
+                  "null"
+                ]
+              },
+              {
+                "doc": "No. of times process restarted by reboots and pmtool restarts over 24 hour period",
+                "name": "managedRestarts",
+                "type": "long"
+              },
+              {
+                "doc": "No. of times process unexpectedly exited over 24 hour period",
+                "name": "unexpectedExits",
+                "type": "long"
+              }
+            ],
+            "name": "ftdProcessExitStatistics",
+            "type": "record"
+          },
+          "type": "array"
+        }
+      ]
+    },
+    {
+      "name": "ftdUpgradeData",
+      "doc": "Contains information on the FTD upgrade history",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "ftdUpgradeData_record",
+          "fields": [{
+              "name": "hotfixesApplied",
+              "type": [
+                "null",
+                "string"
+              ],
+              "default": null
+            },
+            {
+              "name": "baseVersion",
+              "doc": "Version the upgrade was initiated form, ex. 6.7.0",
+              "type": [
+                "null",
+                "string"
+              ],
+              "default": null
+            },
+            {
+              "name": "targetVersion",
+              "doc": "Destination version of the upgrade, ex. 7.0.0",
+              "type": [
+                "null",
+                "string"
+              ],
+              "default": null
+            },
+            {
+              "name": "upgradePackageFilename",
+              "type": [
+                "null",
+                "string"
+              ],
+              "default": null
+            },
+            {
+              "name": "updateType",
+              "doc": "Type of the upgrade (major|patch)",
+              "type": [
+                "null",
+                "string"
+              ],
+              "default": null
+            },
+            {
+              "name": "cancelStatus",
+              "type": [
+                "null",
+                {
+                  "type": "record",
+                  "name": "cancelStatus_record",
+                  "fields": [{
+                      "name": "status",
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    {
+                      "name": "message",
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    {
+                      "name": "startTime",
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    {
+                      "name": "endTime",
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    {
+                      "name": "elapsedTimeInSeconds",
+                      "type": [
+                        "null",
+                        "long"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "upgradeStatus",
+              "type": [
+                "null",
+                {
+                  "type": "array",
+                  "items": {
+                    "name": "upgradeStatuses",
+                    "type": "record",
+                    "fields": [{
+                        "name": "uuid",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "cancelOnFailure",
+                        "type": [
+                          "null",
+                          "boolean"
+                        ],
+                        "default": null
+                      },
+                      {
+                        "name": "status",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "elapsedTimeInSeconds",
+                        "doc": "Time in epoch",
+                        "type": [
+                          "null",
+                          "int"
+                        ]
+                      },
+                      {
+                        "name": "startTime",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "endTime",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "message",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "failedScript",
+                        "type": [
+                          "null",
+                          {
+                            "items": "string",
+                            "type": "array"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "subState",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "scriptExecutionTime",
+                        "type": [
+                          "null",
+                          {
+                            "type": "array",
+                            "items": {
+                              "name": "ScriptExecutionTime_record",
+                              "type": "record",
+                              "fields": [{
+                                  "name": "executionTime",
+                                  "type": "int"
+                                },
+                                {
+                                  "name": "name",
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "name": "scriptExecutionTime",
+                            "type": "record",
+                            "fields": [{
+                              "name": "scripts",
+                              "type": {
+                                "type": "array",
+                                "items": {
+                                  "name": "scripts_record",
+                                  "type": "record",
+                                  "fields": [{
+                                      "name": "name",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "name": "executionTime",
+                                      "type": "int"
+                                    }
+                                  ]
+                                }
+                              }
+                            }]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "taskUuid",
+                        "type": [
+                          "null",
+                          "string"
+                        ]
+                      },
+                      {
+                        "name": "data",
+                        "type": [
+                          "null",
+                          {
+                            "name": "data",
+                            "type": "record",
+                            "fields": [{
+                                "name": "uuid",
+                                "type": [
+                                  "null",
+                                  "string"
+                                ]
+                              },
+                              {
+                                "name": "cancelOnFailure",
+                                "type": [
+                                  "null",
+                                  "boolean"
+                                ],
+                                "default": null
+                              },
+                              {
+                                "name": "status",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              {
+                                "name": "elapsedTimeInSeconds",
+                                "doc": "Time in epoch",
+                                "type": "int"
+                              },
+                              {
+                                "name": "startTime",
+                                "type": "string"
+                              },
+                              {
+                                "name": "endTime",
+                                "type": "string"
+                              },
+                              {
+                                "name": "message",
+                                "type": "string"
+                              },
+                              {
+                                "name": "failedScript",
+                                "type": [
+                                  "null",
+                                  {
+                                    "items": "string",
+                                    "type": "array"
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "subState",
+                                "type": [
+                                  "null",
+                                  "string"
+                                ]
+                              },
+                              {
+                                "name": "scriptExecutionTime",
+                                "type": [
+                                  "null",
+                                  {
+                                    "type": "array",
+                                    "items": {
+                                      "name": "scriptExecutionTime_record",
+                                      "type": "record",
+                                      "fields": [{
+                                          "name": "executionTime",
+                                          "type": "int"
+                                        },
+                                        {
+                                          "name": "name",
+                                          "type": "string"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "managementInterfaceConverged",
+      "doc": "true = CONVERGED, false = NON_CONVERGED",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    {
+      "name": "networkAnalysisPolicyOverrideUsageStats",
+      "doc": "network analysis policy override statistics",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "networkAnalysisStatItem",
+          "type": "record",
+          "fields": [{
+              "name": "basePolicy",
+              "doc": "name of the basePolicy of the current NAP policy",
+              "type": "string"
+            },
+            {
+              "name": "inspectorOverride",
+              "doc": "inspector override usage statistics under current policy.",
+              "type": {
+                "type": "array",
+                "items": {
+                  "name": "inspectorOverrideItem",
+                  "type": "record",
+                  "fields": [{
+                      "name": "enabled",
+                      "doc": "if the inspector is enabled",
+                      "type": "boolean"
+                    },
+                    {
+                      "name": "inspectorName",
+                      "doc": "name of the current inspector",
+                      "type": "string"
+                    },
+                    {
+                      "name": "updatedAttributeNames",
+                      "doc": "name of the overridden attribute under current inspector",
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "name": "updateAttributeNameItem",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "default": 0,
+                      "name": "newInstancesCount",
+                      "doc": "number of created new instance under current inspector",
+                      "type": "long"
+                    },
+                    {
+                      "default": 0,
+                      "name": "binderRuleCount",
+                      "doc": "number of effective binder rule that is applied to current inspector",
+                      "type": "long"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "usedInAccessPolicy",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "networkInterfaceModule",
+      "type": [
+        "null",
+        {
+          "doc": "This will contain information about Network Interface Modules and broken out interfaces",
+          "fields": [{
+            "doc": "List of Network Interface Modules on the device",
+            "name": "items",
+            "type": {
+              "type": "array",
+              "items": {
+                "doc": "This will the Network Module items.",
+                "fields": [{
+                    "default": "",
+                    "doc": "The Model of the NetworkInterfaceModule",
+                    "name": "modelUsed",
+                    "type": "string"
+                  },
+                  {
+                    "default": 0,
+                    "doc": "The Number of Ports for the Module",
+                    "name": "numberOfPorts",
+                    "type": "double"
+                  },
+                  {
+                    "default": 0,
+                    "doc": "The Number of Ports that have been Broken Out for the Network Interface Module",
+                    "name": "numberOfBrokenOutPorts",
+                    "type": "double"
+                  }
+                ],
+                "name": "netMod_record",
+                "type": "record"
+              }
+            }
+          }],
+          "name": "networkInterfaceModule_schema",
+          "type": "record"
+        }
+      ]
+    }
+  ],
+  "name": "device_record",
+  "type": "record",
+  "namespace": "fdm-1.5"
+}
