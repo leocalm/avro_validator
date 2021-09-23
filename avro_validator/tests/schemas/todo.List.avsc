@@ -1,0 +1,45 @@
+{
+    "type" : "record",
+    "name" : "List",
+    "namespace" : "todo",
+    "fields" : [
+      {
+        "name" : "title",
+        "type" : "string"
+      },
+      {
+        "name" : "subtitle",
+        "type" : ["null", "string"]
+      },
+      {
+        "name" : "owner",
+        "type" : ["null", "todo.Owner", "todo.Admin"]
+      },
+      {
+        "name" : "items",
+        "type": {
+          "type": "array",
+          "items": "todo.Item"
+        }
+      },
+      {
+        "name": "priority",
+        "type": {
+          "type": "record",
+          "name": "priority",
+          "fields": [
+            {
+              "name": "order",
+              "type": "int",
+              "default": null
+            },
+            {
+              "name": "requester",
+              "type": "todo.Customer"
+            }
+          ]
+        }
+      }
+    ]
+  }
+  

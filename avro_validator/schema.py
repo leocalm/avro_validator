@@ -1,4 +1,5 @@
 import json
+import os
 
 from avro_validator.avro_types import RecordType
 
@@ -13,6 +14,7 @@ class Schema:
             schema: the json string containing the schema, or the path to a json file containing the schema
         """
         try:
+            self.schema_dir = os.path.dirname(schema)
             with open(schema, 'r') as schema_file:
                 self._schema = schema_file.read()
         except Exception:
@@ -25,4 +27,4 @@ class Schema:
             The RecordType representing the parsed schema.
         """
         schema = json.loads(self._schema)
-        return RecordType.build(schema)
+        return RecordType.build(json_repr=schema, schema_dir=self.schema_dir)

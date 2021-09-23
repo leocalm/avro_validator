@@ -1,0 +1,13 @@
+{
+    "type" : "record",
+    "name" : "Owner",
+    "namespace" : "todo",
+    "fields" : [
+      {
+        "name" : "name",
+        "type" : "string"
+      }
+    ],
+    "doc" : "The owner of a to do list"
+  }
+  

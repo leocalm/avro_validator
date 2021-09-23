@@ -21,6 +21,8 @@ FIELD_MAPPING = {
     'record': 'RecordType'
 }
 
+CUSTOM_FIELDS = {}
+
 
 class Type:
     """Base abstract class to represent avro types"""
@@ -80,11 +82,23 @@ class ComplexType(Type):
         if custom_fields.get(field_type, None) is not None:
             return field_type
 
-        if not FIELD_MAPPING.get(field_type):
-            raise ValueError(
-                f'The type [{field_type}] is not recognized by Avro')
+        if FIELD_MAPPING.get(field_type):
+            return getattr(sys.modules[__name__], FIELD_MAPPING[field_type]).build(None, custom_fields)
 
-        return getattr(sys.modules[__name__], FIELD_MAPPING[field_type]).build(None, custom_fields)
+        if CUSTOM_FIELDS.get(field_type):
+            return CUSTOM_FIELDS.get(field_type)
+
+        try:
+            if CUSTOM_FIELDS.get('__schema_dir'):
+                from avro_validator.schema import Schema
+                schema = Schema("%s/%s.avsc" % (CUSTOM_FIELDS['__schema_dir'], field_type))
+                CUSTOM_FIELDS[field_type] = schema.parse()
+                return CUSTOM_FIELDS.get(field_type)
+        except FileNotFoundError:
+            pass
+
+        raise ValueError(
+            f'The type [{field_type}] is not recognized by Avro')
 
 
 class IntType(Type):
@@ -630,7 +644,8 @@ class RecordType(ComplexType):
     def build(
             cls,
             json_repr: Union[Mapping[str, Any], Sequence[Any]],
-            custom_fields: Optional[Mapping[str, Type]] = None
+            custom_fields: Optional[Mapping[str, Type]] = None,
+            schema_dir=None
     ) -> 'RecordType':
         """Build an instance of the RecordType, based on a json representation of it.
 
@@ -643,6 +658,10 @@ class RecordType(ComplexType):
         """
         if custom_fields is None:
             custom_fields: Dict[str, RecordType] = {}
+
+        # this is a hack, works if there is only one dir with schemas
+        if schema_dir:
+            CUSTOM_FIELDS['__schema_dir'] = schema_dir
 
         cls._validate_json_repr(json_repr)
 
