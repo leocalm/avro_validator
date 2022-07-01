@@ -1,0 +1,11 @@
+version: '2.4'
+
+services:    
+  avro_validator_lib_test_shell:
+    build: .
+    env_file:
+      - local.env    
+    volumes:
+      - ../:/code
+    stdin_open: true
+    tty: true

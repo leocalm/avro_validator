@@ -1,0 +1,17 @@
+{
+    "type" : "record",
+    "name" : "Item",
+    "namespace" : "todo",
+    "fields" : [
+      {
+        "name" : "title",
+        "type" : "string"
+      },
+      {
+        "name" : "description",
+        "type" : "string"
+      }
+    ],
+    "doc" : "An item in a to do list"
+  }
+  
