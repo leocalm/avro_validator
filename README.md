@@ -47,7 +47,7 @@ compatible with the `bool` type.
 #### Command usage
 It is possible to get information about usage of the `avro_validator` using the help:
 ```bash
-$ avro_valdidator -h
+$ avro_validator -h
 ```
 
 ### Library usage
