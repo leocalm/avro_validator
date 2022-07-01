@@ -597,7 +597,7 @@ class RecordType(ComplexType):
                              f'required, but not present: [{missing_fields}].')
 
         if not value_keys.issubset(set(self.__fields.keys())):
-            extra_fields = set(self.__fields.keys()) - value_keys
+            extra_fields = value_keys - set(self.__fields.keys())
             raise ValueError(f'The fields from value [{value_keys}] differs from the fields '
                              f'of the record type [{required_fields}]. The following fields are '
                              f'not in the schema, but are present: [{extra_fields}].')
