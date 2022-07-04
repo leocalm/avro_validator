@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/leocalm/avro_validator.svg?branch=master)](https://travis-ci.org/leocalm/avro_validator)
-[![Coverage Status](https://coveralls.io/repos/github/leocalm/avro_validator/badge.svg?branch=master)](https://coveralls.io/github/leocalm/avro_validator?branch=master)
+[![CI](https://github.com/leocalm/avro_validator/actions/workflows/ci.yaml/badge.svg)](https://github.com/leocalm/avro_validator/actions/workflows/ci.yaml)
 [![Documentation Status](https://readthedocs.org/projects/avro-validator/badge/?version=latest)](https://avro-validator.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/avro-validator.svg)](https://badge.fury.io/py/avro-validator)
 [![Downloads](https://pepy.tech/badge/avro-validator)](https://pepy.tech/project/avro-validator)
@@ -48,7 +47,7 @@ compatible with the `bool` type.
 #### Command usage
 It is possible to get information about usage of the `avro_validator` using the help:
 ```bash
-$ avro_valdidator -h
+$ avro_validator -h
 ```
 
 ### Library usage
