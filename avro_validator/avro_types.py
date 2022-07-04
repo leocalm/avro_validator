@@ -60,9 +60,11 @@ class ComplexType(Type):
 
     @classmethod
     def _validate_json_repr(
-            cls,
-            json_repr: Mapping[str, Any],
-            skip_extra_keys=False) -> bool:
+        cls,
+        json_repr: Mapping[str, Any],
+        skip_extra_keys=False
+    ) -> bool:
+
         if cls.required_attributes.intersection(json_repr.keys()) != cls.required_attributes:
             raise ValueError(f'The {cls.__name__} must have {cls.required_attributes} defined.')
 

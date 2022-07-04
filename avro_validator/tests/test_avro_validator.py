@@ -844,3 +844,27 @@ def test_validate_failed_against_extra_values():
             },
             'boulou': 'Billy'
         })
+
+
+def test_metadata_fields__dont_break_validation():
+    record_type = RecordType.build({
+        "name": "Actor",
+        "type": "record",
+        "fields": [
+            {
+                "name": "actedBy",
+                "type": ["null", "Actor"],
+            }
+        ],
+        "my_comment": "test"
+    }, skip_extra_keys=True)
+
+    data = {
+        "actedBy": {
+            "actedBy": {
+                "actedBy": None
+            }
+        }
+    }
+
+    assert record_type.validate(data) is True
