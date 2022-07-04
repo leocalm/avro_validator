@@ -18,11 +18,11 @@ class Schema:
         except Exception:
             self._schema = schema
 
-    def parse(self) -> RecordType:
+    def parse(self, skip_extra_keys=False) -> RecordType:
         """Parses the schema and returns a RecordType containing the schema.
 
         Returns:
             The RecordType representing the parsed schema.
         """
         schema = json.loads(self._schema)
-        return RecordType.build(schema)
+        return RecordType.build(schema, skip_extra_keys=skip_extra_keys)
