@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'avro_validator'
-copyright = '2019, Leonardo de Campos Almeida'
+copyright = '2022, Leonardo de Campos Almeida'
 author = 'Leonardo de Campos Almeida'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '1.0.13'
 
 
 # -- General configuration ---------------------------------------------------
@@ -35,13 +35,14 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.githubpages',
 ]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -49,11 +50,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# pygments_style = 'sphinx'
-#
-# html_theme = 'neo_rtd_theme'
-# import sphinx_theme
-# html_theme_path = [sphinx_theme.get_html_theme_path()]
+html_theme = 'alabaster'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
