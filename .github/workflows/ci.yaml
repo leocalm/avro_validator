@@ -1,5 +1,5 @@
 name: CI
-on: pull_request
+on: ["push", "pull_request"]
 
 jobs:
   ci:
@@ -28,4 +28,9 @@ jobs:
           echo "PYTHONPATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
           export PYTHONPATH=${GITHUB_WORKSPACE}
           cd avro_validator/tests
-          pytest --cov=avro_validator
+          pytest --cov=avro_validator --cov-report xml
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.xml
