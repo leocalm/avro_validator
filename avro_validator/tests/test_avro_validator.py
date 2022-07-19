@@ -1415,3 +1415,37 @@ def test_logical_type_local_timestamp_micros_string__invalid():
                 }
             ],
         })
+
+
+def test_logical_type_not_string__invalid():
+    with pytest.raises(TypeError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": 1,
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_invalid__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "myLogicalType",
+                    },
+                }
+            ],
+        })
