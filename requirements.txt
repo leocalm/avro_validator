@@ -1,9 +1,9 @@
-hypothesis==6.48.3
-pytest==7.1.2
-pytest-cov==3.0.0
-flake8==4.0.1
-tox==3.25.1
-Sphinx==5.0.2
-python-coveralls==2.9.3
+hypothesis
+pytest
+pytest-cov
+flake8
+tox
+Sphinx>=5.0.0
 sphinx-theme==1.0
-coverage==6.4.1
+coverage
+typeguard==2.13.3

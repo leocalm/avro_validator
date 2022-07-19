@@ -868,3 +868,550 @@ def test_metadata_fields__dont_break_validation():
     }
 
     assert record_type.validate(data) is True
+
+
+def test_logical_type_decimal_bytes__valid():
+    record_type = RecordType.build({
+        "name": "Room",
+        "type": "record",
+        "fields": [
+            {
+                "name": "temperature",
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                    "precision": 2,
+                    "scale": 2
+                },
+            }
+        ],
+    })
+
+    data = {
+        "temperature": b"10.00"
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_duration_bytes__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Worker",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "shift",
+                    "type": {
+                        "type": "bytes",
+                        "logicalType": "duration",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_decimal_fixed__valid():
+    record_type = RecordType.build({
+        "name": "Room",
+        "type": "record",
+        "fields": [
+            {
+                "name": "temperature",
+                "type": {
+                    "type": "fixed",
+                    "logicalType": "decimal",
+                    "precision": 2,
+                    "scale": 2,
+                    "size": 5,
+                    "name": "temperature"
+                },
+            }
+        ],
+    })
+
+    data = {
+        "temperature": b"10.00"
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_decimal_fixed_str_precision__invalid():
+    with pytest.raises(TypeError):
+        RecordType.build({
+            "name": "Room",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "temperature",
+                    "type": {
+                        "type": "fixed",
+                        "logicalType": "decimal",
+                        "precision": "a",
+                        "scale": 2,
+                        "size": 5,
+                        "name": "temperature"
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_decimal_fixed_str_scale__invalid():
+    with pytest.raises(TypeError):
+        RecordType.build({
+            "name": "Room",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "temperature",
+                    "type": {
+                        "type": "fixed",
+                        "logicalType": "decimal",
+                        "precision": 2,
+                        "scale": "a",
+                        "size": 5,
+                        "name": "temperature"
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_date_fixed__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Room",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "temperature",
+                    "type": {
+                        "type": "fixed",
+                        "logicalType": "date",
+                        "size": 5,
+                        "name": "temperature"
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_duration_fixed__valid():
+    record_type = RecordType.build({
+            "name": "Worker",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "shift",
+                    "type": {
+                        "type": "fixed",
+                        "logicalType": "duration",
+                        "size": 12,
+                        "name": "temperature"
+                    },
+                }
+            ],
+        })
+
+    data = {
+        "shift": b"123456789012"
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_duration_fixed_wrong_size__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Worker",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "shift",
+                    "type": {
+                        "type": "fixed",
+                        "logicalType": "duration",
+                        "size": 5,
+                        "name": "temperature"
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_duration_fixed_invalid_fields__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Worker",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "shift",
+                    "type": {
+                        "type": "fixed",
+                        "logicalType": "duration",
+                        "size": 5,
+                        "name": "temperature",
+                        "precision": 2,
+                        "scale": 2
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_decimal_float__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Room",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "temperature",
+                    "type": {
+                        "type": "float",
+                        "logicalType": "decimal",
+                        "size": 5,
+                        "name": "temperature",
+                        "precision": 2,
+                        "scale": 2
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_decimal_missing_optional_attributes__valid():
+    record_type = RecordType.build({
+        "name": "Room",
+        "type": "record",
+        "fields": [
+            {
+                "name": "temperature",
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "temperature": b"10.00"
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_uuid__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "id",
+                "type": {
+                    "type": "string",
+                    "logicalType": "UUID",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "id": "9f5ef95b-ef53-4fb8-b907-e800d056c58c"
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_uuid_bytes__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": {
+                        "type": "bytes",
+                        "logicalType": "UUID",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_date__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "birthday",
+                "type": {
+                    "type": "int",
+                    "logicalType": "Date",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "birthday": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_date_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "date",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_time_millis__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "hourOfBirth",
+                "type": {
+                    "type": "int",
+                    "logicalType": "time-millis",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "hourOfBirth": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_time_millis_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "hourOfBirth",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "time-millis",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_time_micros__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "hourOfBirth",
+                "type": {
+                    "type": "long",
+                    "logicalType": "time-micros",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "hourOfBirth": 1000000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_time_micros_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "hourOfBirth",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "time-micros",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_timestamp_millis__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "birthday",
+                "type": {
+                    "type": "long",
+                    "logicalType": "timestamp-millis",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "birthday": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_timestamp_millis_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "timestamp-millis",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_timestamp_micros__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "birthday",
+                "type": {
+                    "type": "long",
+                    "logicalType": "timestamp-micros",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "birthday": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_timestamp_micros_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "timestamp-micros",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_local_timestamp_millis__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "birthday",
+                "type": {
+                    "type": "long",
+                    "logicalType": "local-timestamp-millis",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "birthday": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_local_timestamp_millis_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "local-timestamp-millis",
+                    },
+                }
+            ],
+        })
+
+
+def test_logical_type_local_timestamp_micros__valid():
+    record_type = RecordType.build({
+        "name": "Person",
+        "type": "record",
+        "fields": [
+            {
+                "name": "birthday",
+                "type": {
+                    "type": "long",
+                    "logicalType": "local-timestamp-micros",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "birthday": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_logical_type_local_timestamp_micros_string__invalid():
+    with pytest.raises(ValueError):
+        RecordType.build({
+            "name": "Person",
+            "type": "record",
+            "fields": [
+                {
+                    "name": "birthday",
+                    "type": {
+                        "type": "string",
+                        "logicalType": "local-timestamp-micros",
+                    },
+                }
+            ],
+        })
