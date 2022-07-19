@@ -4,7 +4,6 @@ import struct
 import sys
 from typing import Any, Sequence, Mapping, Optional, Set, Union, Dict
 
-from typeguard import check_type
 
 FIELD_MAPPING = {
     'string': 'StringType',
@@ -26,7 +25,7 @@ FIELD_MAPPING = {
 LOGICAL_TYPES = {
     'decimal': {
         'types': ['FixedType', 'BytesType'],
-        'extra_fields': {'precision': Optional[int], 'scale': Optional[int]},
+        'extra_fields': {'precision': int, 'scale': int},
         'fixed_size': None
     },
     'duration': {
@@ -102,6 +101,40 @@ class Type:
         """
         return isinstance(value, self.python_type)
 
+    @staticmethod
+    def _validate_logical_type_fields(
+        json_repr: Mapping[str, Any],
+        logical_type: str,
+        logical_type_definition: Mapping[str, Any]
+    ) -> None:
+        for logical_type_field in LOGICAL_TYPE_FIELDS:
+            if json_repr.get(logical_type_field):
+                if logical_type_field not in logical_type_definition['extra_fields'].keys():
+                    raise ValueError(
+                        f'The logicalType {logical_type} does not accept the field {logical_type_field}'
+                    )
+
+                expected_type = logical_type_definition['extra_fields'][logical_type_field]
+                if type(json_repr.get(logical_type_field)) != expected_type:
+                    raise TypeError(
+                        f'The field {logical_type_field} '
+                        f'must have type {logical_type_definition["extra_fields"][logical_type_field]}. '
+                        f'Got {type(json_repr.get(logical_type_field))}'
+                    )
+
+    @staticmethod
+    def _validate_logical_type_size(
+        json_repr: Mapping[str, Any],
+        logical_type: str,
+        logical_type_definition: Mapping[str, Any]
+    ) -> None:
+        fixed_size = logical_type_definition['fixed_size']
+        if fixed_size and json_repr['size'] != fixed_size:
+            raise ValueError(
+                f'The allowed size for the logicalType {logical_type} is {fixed_size}. '
+                f'Current value: {json_repr["size"]}'
+            )
+
     @classmethod
     def _validate_logical_type(cls, json_repr: Mapping[str, Any]) -> bool:
         if not json_repr:
@@ -127,25 +160,12 @@ class Type:
                 f'Got {cls}.'
             )
 
-        for logical_type_field in LOGICAL_TYPE_FIELDS:
-            if json_repr.get(logical_type_field):
-                if logical_type_field not in logical_type_definition['extra_fields'].keys():
-                    raise ValueError(
-                        f'The logicalType {logical_type} does not accept the field {logical_type_field}'
-                    )
-
-                check_type(
-                    logical_type_field,
-                    json_repr.get(logical_type_field),
-                    logical_type_definition['extra_fields'][logical_type_field]
-                )
-
-        fixed_size = logical_type_definition['fixed_size']
-        if fixed_size and json_repr['size'] != fixed_size:
-            raise ValueError(
-                f'The allowed size for the logicalType {logical_type} is {fixed_size}. '
-                f'Current value: {json_repr["size"]}'
-            )
+        cls._validate_logical_type_fields(
+            json_repr=json_repr, logical_type=logical_type, logical_type_definition=logical_type_definition
+        )
+        cls._validate_logical_type_size(
+            json_repr=json_repr, logical_type=logical_type, logical_type_definition=logical_type_definition
+        )
 
     @classmethod
     def build(
