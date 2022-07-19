@@ -30,7 +30,6 @@ jobs:
           cd avro_validator/tests
           pytest --cov=avro_validator --cov-report xml
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: AndreMiras/coveralls-python-action@develop
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.xml
+          flag-name: Unit Test
