@@ -4,6 +4,7 @@ import struct
 import sys
 from typing import Any, Sequence, Mapping, Optional, Set, Union, Dict
 
+
 FIELD_MAPPING = {
     'string': 'StringType',
     'int': 'IntType',
@@ -20,6 +21,61 @@ FIELD_MAPPING = {
     'enum': 'EnumType',
     'record': 'RecordType'
 }
+
+LOGICAL_TYPES = {
+    'decimal': {
+        'types': ['FixedType', 'BytesType'],
+        'extra_fields': {'precision': int, 'scale': int},
+        'fixed_size': None
+    },
+    'duration': {
+        'types': ['FixedType'],
+        'extra_fields': {},
+        'fixed_size': 12
+    },
+    'uuid': {
+        'types': ['StringType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'date': {
+        'types': ['IntType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'time-millis': {
+        'types': ['IntType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'time-micros': {
+        'types': ['LongType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'timestamp-millis': {
+        'types': ['LongType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'timestamp-micros': {
+        'types': ['LongType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'local-timestamp-millis': {
+        'types': ['LongType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+    'local-timestamp-micros': {
+        'types': ['LongType'],
+        'extra_fields': {},
+        'fixed_size': None
+    },
+}
+
+LOGICAL_TYPE_FIELDS: Set[str] = {'precision', 'scale'}
 
 
 class Type:
@@ -45,12 +101,79 @@ class Type:
         """
         return isinstance(value, self.python_type)
 
+    @staticmethod
+    def _validate_logical_type_fields(
+        json_repr: Mapping[str, Any],
+        logical_type: str,
+        logical_type_definition: Mapping[str, Any]
+    ) -> None:
+        for logical_type_field in LOGICAL_TYPE_FIELDS:
+            if json_repr.get(logical_type_field):
+                if logical_type_field not in logical_type_definition['extra_fields'].keys():
+                    raise ValueError(
+                        f'The logicalType {logical_type} does not accept the field {logical_type_field}'
+                    )
+
+                expected_type = logical_type_definition['extra_fields'][logical_type_field]
+                if type(json_repr.get(logical_type_field)) != expected_type:
+                    raise TypeError(
+                        f'The field {logical_type_field} '
+                        f'must have type {logical_type_definition["extra_fields"][logical_type_field]}. '
+                        f'Got {type(json_repr.get(logical_type_field))}'
+                    )
+
+    @staticmethod
+    def _validate_logical_type_size(
+        json_repr: Mapping[str, Any],
+        logical_type: str,
+        logical_type_definition: Mapping[str, Any]
+    ) -> None:
+        fixed_size = logical_type_definition['fixed_size']
+        if fixed_size and json_repr['size'] != fixed_size:
+            raise ValueError(
+                f'The allowed size for the logicalType {logical_type} is {fixed_size}. '
+                f'Current value: {json_repr["size"]}'
+            )
+
+    @classmethod
+    def _validate_logical_type(cls, json_repr: Mapping[str, Any]) -> bool:
+        if not json_repr:
+            return True
+
+        logical_type = json_repr.get('logicalType')
+        if not logical_type:
+            return True
+
+        if type(logical_type) != str:
+            raise TypeError(f'LogicalType must always be a string. Got {type(logical_type)}')
+
+        logical_type_lower = logical_type.lower()
+        if logical_type_lower not in LOGICAL_TYPES:
+            raise ValueError(
+                f'LogicalType can only have one of these values: {list(LOGICAL_TYPES.keys())}. Got {logical_type}'
+            )
+
+        logical_type_definition = LOGICAL_TYPES[logical_type_lower]
+        if cls.__name__ not in logical_type_definition['types']:
+            raise ValueError(
+                f'The logicalType {logical_type} can only be used with the types {logical_type_definition["types"]}. '
+                f'Got {cls}.'
+            )
+
+        cls._validate_logical_type_fields(
+            json_repr=json_repr, logical_type=logical_type, logical_type_definition=logical_type_definition
+        )
+        cls._validate_logical_type_size(
+            json_repr=json_repr, logical_type=logical_type, logical_type_definition=logical_type_definition
+        )
+
     @classmethod
     def build(
             cls,
             json_repr: Union[Mapping[str, Any], Sequence[Any]],
             custom_fields: Optional[Mapping[str, 'Type']]
     ) -> 'Type':
+        cls._validate_logical_type(json_repr)
         return cls()
 
 
@@ -68,10 +191,17 @@ class ComplexType(Type):
         if cls.required_attributes.intersection(json_repr.keys()) != cls.required_attributes:
             raise ValueError(f'The {cls.__name__} must have {cls.required_attributes} defined.')
 
-        if not skip_extra_keys and not cls.optional_attributes.union(cls.required_attributes).issuperset(json_repr.keys()):
-            raise ValueError(f'The {cls.__name__} can only contains '
-                             f'{cls.required_attributes.union(cls.optional_attributes)} keys, '
-                             f'but does contain also {set(json_repr.keys()).difference(cls.optional_attributes, cls.required_attributes)}')
+        all_fields = (
+            cls.optional_attributes.union(cls.required_attributes).union(LOGICAL_TYPE_FIELDS).union({'logicalType'})
+        )
+
+        if not skip_extra_keys and not all_fields.issuperset(json_repr.keys()):
+            raise ValueError(
+                f'The {cls.__name__} can only contains '
+                f'{cls.required_attributes.union(cls.optional_attributes)} keys, '
+                f'but does contain also '
+                f'{set(json_repr.keys()).difference(cls.optional_attributes, cls.required_attributes)}'
+            )
 
         return True
 
@@ -1157,6 +1287,8 @@ class FixedType(ComplexType):
         Returns:
             A newly created instance of FixedType, based on the json representation
         """
+        super(cls, cls).build(json_repr, custom_fields)
+
         if custom_fields is None:
             custom_fields = {}
 

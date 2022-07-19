@@ -22,7 +22,7 @@ jobs:
           pip install -U pytest
       - name: Lint with flake8
         run: |
-          flake8 oncall_report
+          flake8 avro_validator
       - name: Test with pytest
         run: |
           echo "PYTHONPATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
