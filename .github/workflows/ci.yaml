@@ -1,5 +1,10 @@
 name: CI
-on: pull_request
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+
 
 jobs:
   ci:
@@ -27,5 +32,10 @@ jobs:
         run: |
           echo "PYTHONPATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
           export PYTHONPATH=${GITHUB_WORKSPACE}
-          cd avro_validator/tests
-          pytest --cov=avro_validator
+          coverage run --source=avro_validator -m pytest avro_validator/tests/
+      - name: ls
+        run: ls -lahtr
+      - name: Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github

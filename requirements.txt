@@ -6,3 +6,4 @@ tox
 Sphinx>=5.0.0
 sphinx-theme==1.0
 coverage
+coveralls
