@@ -2,8 +2,7 @@ import abc
 import re
 import struct
 import sys
-from typing import Any, Sequence, Mapping, Optional, Set, Union, Dict
-
+from typing import Any, Sequence, Mapping, Optional, Set, Union, Dict, List
 
 FIELD_MAPPING = {
     'string': 'StringType',
@@ -82,7 +81,7 @@ class Type:
     """Base abstract class to represent avro types"""
 
     @property
-    def python_type(self):
+    def python_types(self):
         """Gets the python type associated with the avro type"""
         raise NotImplementedError
 
@@ -99,7 +98,7 @@ class Type:
         Returns:
           True if the value has the correct type and False otherwise.
         """
-        return isinstance(value, self.python_type)
+        return any(isinstance(value, t) for t in self.python_types)
 
     @staticmethod
     def _validate_logical_type_fields(
@@ -232,7 +231,7 @@ class IntType(Type):
     Attributes:
       python_type: The python type associated with the int avro type.
     """
-    python_type: type = int
+    python_types: List[type] = [int]
 
     def check_type(self, value: Any) -> bool:
         if isinstance(value, bool):
@@ -271,7 +270,7 @@ class LongType(Type):
     Attributes:
       python_type: The python type associated with the long avro type.
     """
-    python_type = int
+    python_types: List[type] = [int]
 
     def check_type(self, value: Any) -> bool:
         if isinstance(value, bool):
@@ -310,7 +309,7 @@ class NullType(Type):
     Attributes:
       python_type: The python type associated with the null avro type.
     """
-    python_type = type(None)
+    python_types: List[type] = [type(None)]
 
     def validate(self, value: Any) -> bool:
         """For null values, no validation is needed, the check_type is enough.
@@ -336,7 +335,7 @@ class BooleanType(Type):
     Attributes:
       python_type: The python type associated with the boolean avro type.
     """
-    python_type = bool
+    python_types: List[type] = [bool]
 
     def validate(self, value: Any) -> bool:
         """For boolean values, no validation is needed, the check_type is enough.
@@ -362,7 +361,7 @@ class StringType(Type):
     Attributes:
       python_type: The python type associated with the string avro type.
     """
-    python_type = str
+    python_types: List[type] = [str]
 
     def validate(self, value: Any) -> bool:
         """For string values, no validation is needed, the check_type is enough.
@@ -388,7 +387,12 @@ class FloatType(Type):
     Attributes:
       python_type: The python type associated with the float avro type.
     """
-    python_type = float
+    python_types: List[type] = [float, int]
+
+    def check_type(self, value: Any) -> bool:
+        if isinstance(value, bool):
+            return False
+        return super().check_type(value)
 
     def validate(self, value: Any) -> bool:
         """Checks if the value can be used as an float.
@@ -426,7 +430,12 @@ class DoubleType(Type):
     Attributes:
       python_type: The python type associated with the double avro type.
     """
-    python_type = float
+    python_types: List[type] = [float, int]
+
+    def check_type(self, value: Any) -> bool:
+        if isinstance(value, bool):
+            return False
+        return super().check_type(value)
 
     def validate(self, value: Any) -> bool:
         """Checks if the value can be used as an double.
@@ -460,7 +469,7 @@ class BytesType(Type):
     Attributes:
       python_type: The python type associated with the bytes avro type.
     """
-    python_type = bytes
+    python_types: List[type] = [bytes]
 
     def validate(self, value: Any) -> bool:
         """For bytes values, no validation is needed, the check_type is enough.
@@ -609,7 +618,7 @@ class RecordType(ComplexType):
     Attributes:
       python_type: The python type associated with the record avro type.
     """
-    python_type = dict
+    python_types: List[type] = [dict]
     optional_attributes: Set[str] = {'type', 'namespace', 'aliases', 'doc'}
     required_attributes: Set[str] = {'fields', 'name'}
 
@@ -833,7 +842,7 @@ class EnumType(ComplexType):
     Attributes:
       python_type: The python type associated with the enum avro type.
     """
-    python_type = str
+    python_types: List[type] = [str]
     optional_attributes: Set[str] = {'type', 'namespace', 'aliases', 'doc'}
     required_attributes: Set[str] = {'symbols', 'name'}
 
@@ -931,7 +940,7 @@ class ArrayType(ComplexType):
     Attributes:
       python_type: The python type associated with the enum avro type.
     """
-    python_type = list
+    python_types: List[type] = [list]
     optional_attributes: Set[str] = {'type'}
     required_attributes: Set[str] = {'items'}
 
@@ -1024,7 +1033,7 @@ class UnionType(ComplexType):
     Attributes:
       python_type: The python type associated with the union avro type.
     """
-    python_type = Any
+    python_types: List[type] = [Any]
 
     def __init__(self, types: Sequence[Type] = None) -> None:
         """Inits the enum type with the types allowed.
@@ -1126,7 +1135,7 @@ class MapType(ComplexType):
     Attributes:
       python_type: The python type associated with the map avro type.
     """
-    python_type = dict
+    python_types: List[type] = [dict]
     optional_attributes: Set[str] = {'type'}
     required_attributes: Set[str] = {'values'}
 
@@ -1225,7 +1234,7 @@ class FixedType(ComplexType):
     Attributes:
       python_type: The python type associated with the map avro type.
     """
-    python_type = bytes
+    python_types: List[type] = [bytes]
     optional_attributes: Set[str] = {'type', 'namespace', 'aliases'}
     required_attributes: Set[str] = {'name', 'size'}
 
