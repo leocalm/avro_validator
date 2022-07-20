@@ -37,7 +37,7 @@ def test_not_implementing_python_type():
 
     with pytest.raises(NotImplementedError):
         t = MyType()
-        print(t.python_type)
+        print(t.python_types)
 
 
 @given(value=integers(max_value=9_223_372_036_854_775_808))
@@ -146,8 +146,13 @@ def test_float_type(value):
     assert FloatType().validate(value) is True
 
 
-@given(value=one_of(integers(),
-                    none(),
+@given(value=integers())
+def test_float_type_accepts_int(value):
+    assert FloatType().check_type(value) is True
+    assert FloatType().validate(value) is True
+
+
+@given(value=one_of(none(),
                     lists(elements=integers()),
                     dictionaries(keys=text(), values=integers()),
                     booleans(),
@@ -169,8 +174,13 @@ def test_double_type(value):
     assert DoubleType().validate(value) is True
 
 
-@given(value=one_of(integers(),
-                    none(),
+@given(value=integers())
+def test_double_type_accepts_integer(value):
+    assert DoubleType().check_type(value) is True
+    assert DoubleType().validate(value) is True
+
+
+@given(value=one_of(none(),
                     lists(elements=integers()),
                     dictionaries(keys=text(), values=integers()),
                     booleans(),
@@ -1449,3 +1459,45 @@ def test_logical_type_invalid__invalid():
                 }
             ],
         })
+
+
+def test_float_accepts_integer_number():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "value",
+                "type": {
+                    "type": "float",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "value": 1000
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_double_accepts_integer_number():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "value",
+                "type": {
+                    "type": "double",
+                },
+            }
+        ],
+    })
+
+    data = {
+        "value": 1000
+    }
+
+    assert record_type.validate(data) is True
