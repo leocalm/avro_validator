@@ -2,6 +2,7 @@
 [![Documentation Status](https://readthedocs.org/projects/avro-validator/badge/?version=latest)](https://avro-validator.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/avro-validator.svg)](https://badge.fury.io/py/avro-validator)
 [![Downloads](https://pepy.tech/badge/avro-validator)](https://pepy.tech/project/avro-validator)
+[![Coverage Status](https://coveralls.io/repos/github/leocalm/avro_validator/badge.svg?branch=main)](https://coveralls.io/github/leocalm/avro_validator?branch=main)
 
 # Avro Validator
 A pure python avro schema validator.
