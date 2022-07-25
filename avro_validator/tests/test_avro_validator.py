@@ -1724,3 +1724,45 @@ def test_union_type_json_schema_int__invalid():
 
     with pytest.raises(ValueError):
         record_type.validate(data)
+
+
+def test_multiple_union_type__valid():
+    record_type = RecordType.build({
+        "type": "record",
+        "name": "test",
+        "namespace": "com.example",
+        "fields": [{
+            "name": "name",
+            "type": "string"
+        }, {
+            "name": "null_name1",
+            "type": ["null", "string"]
+        }, {
+            "name": "null_name2",
+            "type": ["string", "null"]
+        }, {
+            "name": "num",
+            "type": "int"
+        }, {
+            "name": "null_num1",
+            "type": ["null", "int"]
+        }, {
+            "name": "null_num2",
+            "type": ["int", "null"]
+        }]
+    })
+
+    data = {
+        "name": "snhepdirqromqkgllhgljumtuj",
+        "null_name1": None,
+        "null_name2": None,
+        "num": 186374858,
+        "null_num1": {
+            "int": -1433093325
+        },
+        "null_num2": {
+            "int": -1728851584
+        }
+    }
+
+    assert record_type.validate(data) is True
