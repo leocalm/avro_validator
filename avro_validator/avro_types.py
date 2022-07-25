@@ -1081,6 +1081,23 @@ class UnionType(ComplexType):
         Raises:
           ValueError: if the value is not valid according to the union type definition
         """
+        if isinstance(value, dict):
+            if len(value.keys()) == 1:
+                json_schema_type = list(value.keys())[0]
+                json_schema_value = list(value.values())[0]
+                avro_type = FIELD_MAPPING.get(json_schema_type)
+                if avro_type:
+                    if avro_type in [dt.__class__.__name__ for dt in self.__types]:
+                        value = json_schema_value
+                    else:
+                        raise ValueError(
+                            f"The type in the JSON Schema ({json_schema_type}) is not part of the union {self.__types}"
+                        )
+                else:
+                    avro_type = self.__custom_fields.get(json_schema_type)
+                    if avro_type:
+                        return avro_type.validate(json_schema_value)
+
         for data_type in self.__types:
             if isinstance(data_type, str):
                 return self.__custom_fields[data_type].validate(value)
