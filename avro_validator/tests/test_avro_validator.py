@@ -1501,3 +1501,268 @@ def test_double_accepts_integer_number():
     }
 
     assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_null__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", "string"]
+            }
+        ],
+    })
+
+    data = {
+        "description": None
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_string__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", "string"]
+            }
+        ],
+    })
+
+    data = {
+        "description": {
+            "string": "a"
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_string__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", "string"]
+            }
+        ],
+    })
+
+    data = {
+        "description": "a"
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_map__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", {"type": "map", "values": "int"}]
+            }
+        ],
+    })
+
+    data = {
+        "description": {"a": 1, "b": 2}
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_integer__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", "int"]
+            }
+        ],
+    })
+
+    data = {
+        "description": {
+            "int": 1
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_list__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", {"type": "array", "items": "int"}]
+            }
+        ],
+    })
+
+    data = {
+        "description": {
+            "array": [1, 2, 3]
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_enum__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", {"type": "enum", 'symbols': ['A', 'B', 'C'], 'name': 'my_enum'}]
+            }
+        ],
+    })
+
+    data = {
+        "description": {
+            "enum": "A"
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_map__valid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", {"type": "map", 'values': "int"}]
+            }
+        ],
+    })
+
+    data = {
+        "description": {
+            "map": {"test": 1}
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_record__valid():
+    record_type = RecordType.build({
+        "name": "MyRecord",
+        "type": "record",
+        "fields": [
+            {
+                "name": "Actor",
+                "type": {
+                    "name": "Actor",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "actedBy",
+                "type": ["null",  "Actor"]
+            }
+        ]
+    })
+
+    data = {
+        "Actor": {
+            "name": "a"
+        },
+        "actedBy": {
+            "Actor": {
+                "name": "b"
+            }
+        }
+    }
+
+    assert record_type.validate(data) is True
+
+
+def test_union_type_json_schema_int__invalid():
+    record_type = RecordType.build({
+        "name": "Item",
+        "type": "record",
+        "fields": [
+            {
+                "name": "description",
+                "type": ["null", "int"]
+            }
+        ],
+    })
+
+    data = {
+        "description": {
+            "string": "test"
+        }
+    }
+
+    with pytest.raises(ValueError):
+        record_type.validate(data)
+
+
+def test_multiple_union_type__valid():
+    record_type = RecordType.build({
+        "type": "record",
+        "name": "test",
+        "namespace": "com.example",
+        "fields": [{
+            "name": "name",
+            "type": "string"
+        }, {
+            "name": "null_name1",
+            "type": ["null", "string"]
+        }, {
+            "name": "null_name2",
+            "type": ["string", "null"]
+        }, {
+            "name": "num",
+            "type": "int"
+        }, {
+            "name": "null_num1",
+            "type": ["null", "int"]
+        }, {
+            "name": "null_num2",
+            "type": ["int", "null"]
+        }]
+    })
+
+    data = {
+        "name": "snhepdirqromqkgllhgljumtuj",
+        "null_name1": None,
+        "null_name2": None,
+        "num": 186374858,
+        "null_num1": {
+            "int": -1433093325
+        },
+        "null_num2": {
+            "int": -1728851584
+        }
+    }
+
+    assert record_type.validate(data) is True
