@@ -66,10 +66,11 @@ data_to_validate = {
     'name': 'My Name'
 }
 
-parsed_schema.validate(data_to_validate)
+parsed_schema.validate(data_to_validate, skip_extra_keys=False)
 ```
 In this example, if the `data_to_validate` is valid according to the schema, then the
- `parsed_schema.validate(data_to_validate)` call will return `True`.
+ `parsed_schema.validate(data_to_validate)` call will return `True`. If `skip_extra_keys` is set to `True`, then,
+ extra fields found in `data_to_validate` won't result in `ValueError`.
 
 #### Using a dict as schema
 It is also possible to provide the schema as a json string:
