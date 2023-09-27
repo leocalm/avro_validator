@@ -812,7 +812,8 @@ def test_validate_against_extra_values():
     assert record_type.validate({
         'data': {
             'inner': {
-                'count': 1
+                'count': 1,
+                'inner_extra': True
             }
         },
         'boulou': 'Billy'
