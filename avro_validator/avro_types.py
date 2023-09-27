@@ -86,7 +86,7 @@ class Type:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Validates the value"""
 
     def check_type(self, value: Any) -> bool:
@@ -238,7 +238,7 @@ class IntType(Type):
             return False
         return super().check_type(value)
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Checks if the value can be used as an integer.
 
         Ensures that the value is smaller than 2.147.483.647.
@@ -277,7 +277,7 @@ class LongType(Type):
             return False
         return super().check_type(value)
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Checks if the value can be used as an long.
 
         Ensures that the value is smaller than 9.223.372.036.854.775.807.
@@ -311,7 +311,7 @@ class NullType(Type):
     """
     python_types: List[type] = [type(None)]
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """For null values, no validation is needed, the check_type is enough.
 
         Args:
@@ -337,7 +337,7 @@ class BooleanType(Type):
     """
     python_types: List[type] = [bool]
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """For boolean values, no validation is needed, the check_type is enough.
 
         Args:
@@ -363,7 +363,7 @@ class StringType(Type):
     """
     python_types: List[type] = [str]
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """For string values, no validation is needed, the check_type is enough.
 
         Args:
@@ -394,7 +394,7 @@ class FloatType(Type):
             return False
         return super().check_type(value)
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Checks if the value can be used as an float.
 
         Ensures that the value is not too large for float by using struct.pack.
@@ -437,7 +437,7 @@ class DoubleType(Type):
             return False
         return super().check_type(value)
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Checks if the value can be used as an double.
 
         Ensures that the value is not too large for float by using struct.pack.
@@ -471,7 +471,7 @@ class BytesType(Type):
     """
     python_types: List[type] = [bytes]
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """For bytes values, no validation is needed, the check_type is enough.
 
         Args:
@@ -644,7 +644,7 @@ class RecordType(ComplexType):
         """
         return self.__fields
 
-    def _validate_field(self, field_key: str, field_value: Any) -> bool:
+    def _validate_field(self, field_key: str, field_value: Any, skip_extra_keys: bool = False) -> bool:
         """Validates a field from the list of fields.
 
         This will check if the field is one of the record fields and validate it.
@@ -696,7 +696,7 @@ class RecordType(ComplexType):
             raise ValueError(msg)
 
         try:
-            return field_type.validate(field_value)
+            return field_type.validate(field_value, skip_extra_keys=skip_extra_keys)
         except ValueError as error:
             error_msg = error.args[0]
             match = re.match(r'^Error validating value for field \[(.*)\]: (.*)$', error_msg)
@@ -754,7 +754,7 @@ class RecordType(ComplexType):
 
         for key, field_value in value.items():
             if key not in extra_fields:
-                self._validate_field(key, field_value)
+                self._validate_field(key, field_value, skip_extra_keys=skip_extra_keys)
 
         return True
 
@@ -867,7 +867,7 @@ class EnumType(ComplexType):
         """
         return self.__symbols
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Validates if the value is one of the has the correct type and if it is contained in the symbols list.
 
         Args:
@@ -962,7 +962,7 @@ class ArrayType(ComplexType):
         """
         return self.__items
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Validates the value against the array type definition.
 
         First, the type of the value is checked, to make sure that it is a list.
@@ -983,11 +983,11 @@ class ArrayType(ComplexType):
 
         for index, item in enumerate(value):
             if isinstance(self.__items, str):
-                self.__custom_fields[self.__items].validate(item)
+                self.__custom_fields[self.__items].validate(item, skip_extra_keys=skip_extra_keys)
             else:
                 if not self.__items.check_type(item):
                     raise ValueError(f'The item at index [{index}]: [{item}] is not from the type [{self.__items}]')
-                self.__items.validate(item)
+                self.__items.validate(item, skip_extra_keys=skip_extra_keys)
 
         return True
 
@@ -1075,7 +1075,7 @@ class UnionType(ComplexType):
                 f"The type in the JSON Schema ({json_schema_type}) is not part of the union {self.__types}"
             )
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Validates the value against the Union type definition.
 
         The type of the field os checked against the allowed types for the union, and if the value match one of the
@@ -1105,10 +1105,10 @@ class UnionType(ComplexType):
 
         for data_type in self.__types:
             if isinstance(data_type, str):
-                return self.__custom_fields[data_type].validate(value)
+                return self.__custom_fields[data_type].validate(value, skip_extra_keys=skip_extra_keys)
 
             if data_type.check_type(value):
-                return data_type.validate(value)
+                return data_type.validate(value, skip_extra_keys=skip_extra_keys)
 
         raise ValueError(f'The value [{value}] is not from one of the following types: [{self.__types}]')
 
@@ -1179,7 +1179,7 @@ class MapType(ComplexType):
         """
         return self.__values
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Validated the value against the map definition.
 
         First, the type of the value is checked against the dict type.
@@ -1204,11 +1204,11 @@ class MapType(ComplexType):
                 raise ValueError(f'The key [{map_key}], value [{map_value}] is not from the type StringType')
 
             if isinstance(self.__values, str):
-                self.__custom_fields[self.__values].validate(map_value)
+                self.__custom_fields[self.__values].validate(map_value, skip_extra_keys=skip_extra_keys)
             else:
                 if not self.__values.check_type(map_value):
                     raise ValueError(f'The key [{map_key}], value [{map_value}] is not from the type [{self.__values}]')
-                self.__values.validate(map_value)
+                self.__values.validate(map_value, skip_extra_keys=skip_extra_keys)
 
         return True
 
@@ -1280,7 +1280,7 @@ class FixedType(ComplexType):
         """
         return self.__size
 
-    def validate(self, value: Any) -> bool:
+    def validate(self, value: Any, skip_extra_keys: bool = False) -> bool:
         """Validated the value against the fixed type definition.
 
         First, the type of the value is checked against the bytes type.
